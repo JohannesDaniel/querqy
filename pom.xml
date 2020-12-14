@@ -64,6 +64,7 @@
     <modules>
         <module>querqy-core</module>
         <module>querqy-for-lucene</module>
+        <module>querqy-for-service</module>
     </modules>
 
 
