@@ -2,6 +2,10 @@
 <schema name="minimal test schema" version="1.6">
 
     <similarity class="solr.BooleanSimilarityFactory"/>
+    <!-- <similarity class="solr.BM25SimilarityFactory">
+        <float name="k1">0</float>
+        <float name="b">0</float>
+    </similarity> -->
 
     <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>

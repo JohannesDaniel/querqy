@@ -18,9 +18,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SolrTestCaseJ4.SuppressSSL
 public class ExploreTest extends EmbeddedSolrServerTestBase {
@@ -33,8 +36,8 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
 
     private static void addDocs() {
         assertU(adoc("id", "0", "f1", "tv", "f2", "television"));
-        assertU(adoc("id", "10", "f1", "tv", "f2", "television"));
-        assertU(adoc("id", "11", "f1", "tv", "f2", "television"));
+        assertU(adoc("id", "1", "f1", "tv"));
+        assertU(adoc("id", "11", "f1", "led tv", "f2", "television"));
         assertU(adoc("id", "20", "f1", "television", "f2", "schwarz"));
         assertU(adoc("id", "21", "f1", "television", "f2", "blau"));
         assertU(adoc("id", "22", "f1", "television", "f2", "rot"));
@@ -73,6 +76,83 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
      *
      */
     @Test
+    public void test6() throws IOException, SolrServerException {
+        SolrClient solrClient = super.getSolrClient();
+
+        List<String> boostQueries = new ArrayList<>();
+        boostQueries.add("{!func}if(query({!edismax v=\'schwarz\'}),100,0)");
+        boostQueries.add("{!func}field(id)");
+
+        final ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("qf", "f1^10 f2^5");
+        solrParams.set("additional_boost_queries", "{!func}0");
+
+        Map<String, Object> query = bool(
+                must(
+                        bool(
+                                must(
+                                    edismax("tv"),
+                                    edismax("led")
+                                )
+                        ),
+                        edismax("television")
+                ),
+                should(
+                        // func("field(id)"),
+                        param("additional_boost_queries")
+                )
+        );
+
+
+        final JsonQueryRequest jsonQuery = new JsonQueryRequest(solrParams)
+                .setQuery(query)
+                .withParam("fl", "*,score")
+                ;
+
+
+        final QueryResponse response = jsonQuery.process(solrClient, "collection1");
+
+        for (SolrDocument doc : response.getResults()) {
+            System.out.println(doc);
+        }
+
+        System.out.println(response);
+
+    }
+
+    @SafeVarargs
+    private final Map<String, Object> bool(Map<String, Object>... clauses) {
+        final Map<String, Object> boolMap = new HashMap<>();
+        for (Map<String, Object> clause : clauses) {
+            clause.forEach(boolMap::put);
+        }
+
+        return Collections.singletonMap("bool", boolMap);
+    }
+
+    @SafeVarargs
+    private final Map<String, Object> must(Map<String, Object>... clauses) {
+        return Collections.singletonMap("must", Arrays.stream(clauses).collect(Collectors.toList()));
+    }
+
+    @SafeVarargs
+    private final Map<String, Object> should(Map<String, Object>... clauses) {
+        return Collections.singletonMap("should", Arrays.stream(clauses).collect(Collectors.toList()));
+    }
+
+    private Map<String, Object> edismax(String query) {
+        return Collections.singletonMap("edismax", Collections.singletonMap("query", query));
+    }
+
+    private Map<String, Object> func(String query) {
+        return Collections.singletonMap("func", Collections.singletonMap("query", query));
+    }
+
+    private Map<String, Object> param(String paramVal) {
+        return Collections.singletonMap("param", paramVal);
+    }
+
+    @Test
     public void test5() throws IOException, SolrServerException {
         SolrClient solrClient = super.getSolrClient();
 
@@ -91,6 +171,7 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
 
         params.put("query", "television tv");
         params.put("bq", boostQueries);
+        params.put("bf", "if(query({!edismax v=\'schwarz\'}),100,0)");
 
         // query.put("bq", boostQueries);
 
@@ -102,8 +183,8 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
                 //.withParam("bq", "{!func}if(query({!lucene df=id v=1}),500,0)")
                 //.withParam("bq", "{!func}field(id)")
                 // .withParam("querqy_boosts", boostQueries)
-                .withFilter("f2:(schwarz OR blau)")
-                .withFilter("f2:(schwarz OR rot)")
+                // .withFilter("f2:(schwarz OR blau)")
+                // .withFilter("f2:(schwarz OR rot)")
                 .withParam("fl", "*,score")
                 ;
 
@@ -179,8 +260,8 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
 
 
         List<String> boostQueries = new ArrayList<>();
-        boostQueries.add("{!func}if(query({!edismax v=\'schwarz\'}),100,0)");
-        boostQueries.add("{!func}field(id)");
+//        boostQueries.add("{!func}if(query({!edismax v=\'schwarz\'}),100,0)");
+//        boostQueries.add("{!func}field(id)");
 
         final ModifiableSolrParams solrParams = new ModifiableSolrParams();
         solrParams.set("qf", "f1^10 f2^5");
@@ -202,8 +283,8 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
                 //.withParam("bq", "{!func}if(query({!lucene df=id v=1}),500,0)")
                 //.withParam("bq", "{!func}field(id)")
                 // .withParam("querqy_boosts", boostQueries)
-                .withFilter("f2:(schwarz OR blau)")
-                .withFilter("f2:(schwarz OR rot)")
+                //.withFilter("f2:(schwarz OR blau)")
+                //.withFilter("f2:(schwarz OR rot)")
                 .withParam("fl", "*,score")
                 ;
 

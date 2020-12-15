@@ -27,6 +27,13 @@
 			<int name="rows">10</int>
 			<str name="df">id</str>
 		</lst>
+        <!--
+        <lst name="appends">
+            <str name="additional_boost_queries">{!func}field(id)</str>
+            <str name="additional_boost_queries">{!func}field(id)</str>
+            <str name="additional_boost_queries">f1:television</str>
+        </lst>
+        -->
     </requestHandler>
 
 	<requestHandler name="/analysis/field" startup="lazy"
