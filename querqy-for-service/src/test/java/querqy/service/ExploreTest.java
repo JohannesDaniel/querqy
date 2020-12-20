@@ -5,6 +5,7 @@ import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.json.DirectJsonQueryRequest;
 import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -16,7 +17,12 @@ import org.apache.solr.request.SolrQueryRequest;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +43,9 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
     private static void addDocs() {
         assertU(adoc("id", "0", "f1", "tv", "f2", "television"));
         assertU(adoc("id", "1", "f1", "tv"));
+        assertU(adoc("id", "2", "f1", "tv", "f2", "led"));
         assertU(adoc("id", "11", "f1", "led tv", "f2", "television"));
+        assertU(adoc("id", "12", "f1", "led +tv&", "f2", "television"));
         assertU(adoc("id", "20", "f1", "television", "f2", "schwarz"));
         assertU(adoc("id", "21", "f1", "television", "f2", "blau"));
         assertU(adoc("id", "22", "f1", "television", "f2", "rot"));
@@ -75,6 +83,31 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
      *
      *
      */
+
+    @Test
+    public void test7() throws IOException, SolrServerException {
+        SolrClient solrClient = super.getSolrClient();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("req1.json");
+        String req = new BufferedReader(
+                new InputStreamReader(is, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
+
+        DirectJsonQueryRequest jsonQuery = new DirectJsonQueryRequest(req);
+
+        // System.out.println(req);
+
+        final QueryResponse response = jsonQuery.process(solrClient, "collection1");
+
+        for (SolrDocument doc : response.getResults()) {
+            System.out.println(doc);
+        }
+
+        System.out.println(response);
+
+
+
+    }
+
+
     @Test
     public void test6() throws IOException, SolrServerException {
         SolrClient solrClient = super.getSolrClient();
@@ -87,27 +120,57 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
         solrParams.set("qf", "f1^10 f2^5");
         solrParams.set("additional_boost_queries", "{!func}0");
 
-        Map<String, Object> query = bool(
-                must(
-                        bool(
-                                must(
-                                    edismax("tv"),
-                                    edismax("led")
+        // subqueries with multiple clauses require wrapping functions
+        // dmq -> all should -> max function
+        // bool -> all max -> div(score, len(clauses))
+        Map<String, Object> query =
+                bool(
+                        must(
+                                bool(
+                                        should(
+                                                bool(
+                                                        must(
+                                                            edismax("led"),
+                                                            edismax("tv")
+                                                        )
+                                                ),
+                                                edismax("television")
+                                        )
                                 )
                         ),
-                        edismax("television")
-                ),
-                should(
-                        // func("field(id)"),
-                        param("additional_boost_queries")
-                )
+                        should(
+                                // func("field(id)"),
+                                param("param1"),
+
+
+                                param("additional_boost_queries")
+                        )
         );
 
 
         final JsonQueryRequest jsonQuery = new JsonQueryRequest(solrParams)
                 .setQuery(query)
-                .withParam("fl", "*,score")
-                ;
+                //.withParam("query", query)
+                .withParam("queries",
+                        Collections.singletonMap("param1",
+                                Collections.singletonMap("func",
+                                        Collections.singletonMap("query", "max(10000,20000)"))))
+
+                .withParam("fl", "*,score");
+
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+//        jsonQuery.getContentWriter(null).write(stream);
+//        System.out.println(new String(stream.toByteArray()));
+
+
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        String line = "Hello there!";
+//
+//        stream.write(line.getBytes());
+//        String finalString = new String(stream.toByteArray());
+//
+//        System.out.println(finalString);
 
 
         final QueryResponse response = jsonQuery.process(solrClient, "collection1");
@@ -119,6 +182,7 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
         System.out.println(response);
 
     }
+
 
     @SafeVarargs
     private final Map<String, Object> bool(Map<String, Object>... clauses) {
@@ -141,6 +205,10 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
     }
 
     private Map<String, Object> edismax(String query) {
+        return Collections.singletonMap("edismax", Collections.singletonMap("query", query));
+    }
+
+    private Map<String, Object> edismax(String query, int mm) {
         return Collections.singletonMap("edismax", Collections.singletonMap("query", query));
     }
 

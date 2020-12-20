@@ -37,6 +37,8 @@ public class SolrRequestNodeVisitor extends AbstractNodeVisitor<List<Object>> {
 
     @Override
     public List<Object> visit(final DisjunctionMaxQuery disjunctionMaxQuery) {
+        // dmq combines queries using should -> if dmq contains multiple clauses they must be wrapped by a max function
+
         final List<String> terms = new ArrayList<>();
         final List<Object> parsedClauses = new ArrayList<>();
 
@@ -47,7 +49,7 @@ public class SolrRequestNodeVisitor extends AbstractNodeVisitor<List<Object>> {
             } else if (clause instanceof BooleanQuery){
                 parsedClauses.add(
                         Collections.singletonMap(BOOL,
-                                Collections.singletonMap(MUST, clause.accept(this))));
+                                Collections.singletonMap(SHOULD, clause.accept(this))));
 
             } else {
                 // TODO: Exception
