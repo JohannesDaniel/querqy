@@ -1,0 +1,40 @@
+{
+  "query": {
+    "querqy": {
+      "bool": [
+        "term1",
+        {
+          "dmq": [
+            "term2"
+          ]
+        }
+
+//        {
+//          "or": [
+//            "term3"
+//          ]
+//        }
+      ],
+      "mm": "0%",
+      "tie": 0.0
+    }
+  },
+  "params": {
+    "fl": "*,score",
+    "qf": "f1^10 f2^5"
+  },
+  "queries": {
+    "querqy": {
+      "and": [
+        "term1",
+        "term2",
+        {
+          "or": [
+            "term3"
+          ]
+        }
+      ]
+    }
+
+  }
+}

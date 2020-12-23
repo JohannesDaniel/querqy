@@ -10,6 +10,7 @@ import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
+import org.apache.solr.handler.component.SpellCheckComponent;
 import org.apache.solr.request.SolrQueryRequest;
 import org.apache.solr.search.ExtendedQuery;
 import org.apache.solr.search.QParser;
@@ -60,6 +61,13 @@ public class QuerqyDismaxQParser extends QParser {
                                final TermQueryCache termQueryCache) {
         super(qstr, localParams, params, req);
         final String q = Objects.requireNonNull(qstr).trim();
+
+        /*
+        TODO: This needs to be adjusted. Should also accept JSON input
+          - spell correction?
+
+         */
+
         if (q.isEmpty()) {
             throw new SolrException(BAD_REQUEST, "Query string must not be empty");
         }

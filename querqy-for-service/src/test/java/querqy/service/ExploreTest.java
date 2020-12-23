@@ -93,6 +93,7 @@ public class ExploreTest extends EmbeddedSolrServerTestBase {
 
         DirectJsonQueryRequest jsonQuery = new DirectJsonQueryRequest(req);
 
+
         // System.out.println(req);
 
         final QueryResponse response = jsonQuery.process(solrClient, "collection1");

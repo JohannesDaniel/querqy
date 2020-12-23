@@ -1,0 +1,35 @@
+{
+  "query": {
+    //"bool": {
+    //  "must": [
+    //    {
+          "maxscore": {
+            "query": "((f1:led^=11 || f2:led^=5 || f3:led^=3) && (f1:tv^=11 || f2:tv^=5 || f3:tv^=3)) || (f1:television^=22 || f2:television^=10 || f3:television^=6)",
+            "tie": 0.0,
+          },
+    //    }
+ //     ]
+ //   }
+  },
+  "params": {
+    "fl": "*,score",
+    "qf": "f1^10 f2^5",
+    "_v1": "{!edismax v=${_v2}}",
+    "_v2": "tv",
+    "_v3": "{!edismax v=${_v4}}",
+    "_v4": "tv",
+    "_v5": "((led && tv) || television)"
+  },
+//  "queries": {
+//    "clause1": {
+//      "edismax": {
+//        "query": "tv"
+//      }
+//    },
+//    "clause2": {
+//      "edismax": {
+//        "query": "television"
+//      }
+//    }
+//  }
+}
