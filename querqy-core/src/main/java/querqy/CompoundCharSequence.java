@@ -3,6 +3,7 @@
  */
 package querqy;
 
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -188,5 +189,41 @@ public class CompoundCharSequence implements ComparableCharSequence {
         }
 
         return buf.toString();
+    }
+
+    public static CompoundCharSequenceBuilder builder() {
+        return new CompoundCharSequenceBuilder();
+    }
+
+    public static class CompoundCharSequenceBuilder {
+
+        private CompoundCharSequenceBuilder() {}
+
+        public static final CharSequence DEFAULT_DELIMITER = " ";
+
+        private final ArrayDeque<CharSequence> deque = new ArrayDeque<>(6);
+
+        public boolean isEmpty() {
+            return deque.isEmpty();
+        }
+
+        public CompoundCharSequenceBuilder append(final CharSequence seq) {
+            deque.addLast(seq);
+            return this;
+        }
+
+        public CompoundCharSequenceBuilder prepend(final CharSequence seq) {
+            deque.addFirst(seq);
+            return this;
+        }
+
+        public CompoundCharSequence build() {
+            return this.build(DEFAULT_DELIMITER);
+        }
+
+        public CompoundCharSequence build(final CharSequence delimiter) {
+            return new CompoundCharSequence(delimiter, deque.toArray(new CharSequence[0]));
+        }
+
     }
 }

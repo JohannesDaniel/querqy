@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class QueryBuilder {
@@ -26,6 +27,10 @@ public class QueryBuilder {
     public QueryBuilder addDmqBuilder(final DisjunctionMaxQueryBuilder builder) {
         this.dmqs.add(builder);
         return this;
+    }
+
+    public List<DisjunctionMaxQueryBuilder> getDmqs() {
+        return dmqs;
     }
 
     public Query build() {
@@ -76,5 +81,18 @@ public class QueryBuilder {
         return dmqs.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", ", "query[", "]")) ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QueryBuilder builder = (QueryBuilder) o;
+        return Objects.equals(dmqs, builder.dmqs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dmqs);
     }
 }

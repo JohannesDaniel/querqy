@@ -1,6 +1,5 @@
 package querqy.model.builder;
 
-import querqy.model.BooleanParent;
 import querqy.model.BooleanQuery;
 import querqy.model.Clause;
 import querqy.model.DisjunctionMaxQuery;
@@ -8,14 +7,16 @@ import querqy.model.DisjunctionMaxQuery;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder {
 
-    private final List<DisjunctionMaxQueryBuilder> dmqs;
-    private BooleanParent parent;
+    private DisjunctionMaxQuery parent;
 
-    protected BooleanQueryBuilder(final BooleanParent parent, final List<DisjunctionMaxQueryBuilder> dmqs) {
+    private final List<DisjunctionMaxQueryBuilder> dmqs;
+
+    protected BooleanQueryBuilder(final DisjunctionMaxQuery parent, final List<DisjunctionMaxQueryBuilder> dmqs) {
         this.parent = parent;
         this.dmqs = dmqs;
     }
@@ -31,6 +32,10 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder {
         return this;
     }
 
+    public List<DisjunctionMaxQueryBuilder> getDmqs() {
+        return dmqs;
+    }
+
     @Override
     public BooleanQuery build() {
         final BooleanQuery boolq = new BooleanQuery(this.parent, Clause.Occur.SHOULD, false);
@@ -44,7 +49,7 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder {
         return builder(null);
     }
 
-    public static BooleanQueryBuilder builder(final BooleanParent parent) {
+    public static BooleanQueryBuilder builder(final DisjunctionMaxQuery parent) {
         return new BooleanQueryBuilder(parent, new LinkedList<>());
     }
 
@@ -66,7 +71,6 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder {
         return builder;
     }
 
-
     public static BooleanQueryBuilder bool(final DisjunctionMaxQueryBuilder... dmqs) {
         return new BooleanQueryBuilder(null, Arrays.stream(dmqs).collect(Collectors.toList()));
     }
@@ -78,6 +82,18 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder {
                         .map(DisjunctionMaxQueryBuilder::toString).collect(Collectors.toList())) + "]";
     }
 
+    // TODO: equals() also for nodes
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BooleanQueryBuilder that = (BooleanQueryBuilder) o;
+        return Objects.equals(parent, that.parent) &&
+                Objects.equals(dmqs, that.dmqs);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(parent, dmqs);
+    }
 }

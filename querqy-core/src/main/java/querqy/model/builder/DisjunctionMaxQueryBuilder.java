@@ -7,11 +7,11 @@ import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static querqy.model.builder.TermBuilder.term;
 
 public class DisjunctionMaxQueryBuilder {
     private final List<DisjunctionMaxClauseBuilder> clauses;
@@ -30,6 +30,10 @@ public class DisjunctionMaxQueryBuilder {
     public DisjunctionMaxQueryBuilder addDmqClauseBuilder(final DisjunctionMaxClauseBuilder clause) {
         this.clauses.add(clause);
         return this;
+    }
+
+    public List<DisjunctionMaxClauseBuilder> getClauses() {
+        return clauses;
     }
 
     public DisjunctionMaxQuery build() {
@@ -69,6 +73,10 @@ public class DisjunctionMaxQueryBuilder {
         return builder;
     }
 
+    public static DisjunctionMaxQueryBuilder dmq() {
+        return new DisjunctionMaxQueryBuilder(null, Collections.emptyList());
+    }
+
     public static DisjunctionMaxQueryBuilder dmq(final DisjunctionMaxClauseBuilder... clauses) {
         return new DisjunctionMaxQueryBuilder(null, Arrays.asList(clauses));
     }
@@ -91,6 +99,17 @@ public class DisjunctionMaxQueryBuilder {
 
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DisjunctionMaxQueryBuilder builder = (DisjunctionMaxQueryBuilder) o;
+        return Objects.equals(clauses, builder.clauses) &&
+                Objects.equals(parent, builder.parent);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(clauses, parent);
+    }
 }
