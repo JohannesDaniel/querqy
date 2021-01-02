@@ -1,0 +1,44 @@
+{
+  "query": {
+    "querqy": {  // -> {!querqy clauses=a clauses=$_tt0}&_tt0={!dmq term=b}
+      "clauses": [
+        "a",
+        {
+          "dmq": {"term": "b"}
+        },
+        {
+          "dmq": {
+            "clauses": [
+              {
+                "term": {
+                  "term": "c"
+                }
+              },
+              {
+                "term": {
+                  "term": "d"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "dmq": {
+            "term": "e"
+          }
+        }
+      ],
+      "query": {
+        "bool": {
+          "term": "a"
+        }
+      },
+      "mm": "0%",
+      "tie": 0.0
+    }
+  },
+  "params": {
+    "fl": "*,score",
+    "qf": "f1^10 f2^5"
+  }
+}

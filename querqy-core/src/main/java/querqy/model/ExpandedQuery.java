@@ -13,6 +13,7 @@ import java.util.LinkedList;
  *
  *         Note: this class does not synchronize access to filterQueries and
  *         boostQueries.
+ *         TODO: Should return empty lists instead of null
  *
  */
 public class ExpandedQuery {
@@ -24,6 +25,16 @@ public class ExpandedQuery {
 
    public ExpandedQuery(QuerqyQuery<?> userQuery) {
       setUserQuery(userQuery);
+   }
+
+   public ExpandedQuery(QuerqyQuery<?> userQuery,
+                        Collection<QuerqyQuery<?>> filterQueries,
+                        Collection<BoostQuery> boostUpQueries,
+                        Collection<BoostQuery> boostDownQueries) {
+       setUserQuery(userQuery);
+       filterQueries.forEach(this::addFilterQuery);
+       boostUpQueries.forEach(this::addBoostUpQuery);
+       boostDownQueries.forEach(this::addBoostDownQuery);
    }
 
    public QuerqyQuery<?> getUserQuery() {

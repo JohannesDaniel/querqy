@@ -1,5 +1,8 @@
 package querqy.model.builder;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 import querqy.ComparableCharSequenceWrapper;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Node;
@@ -9,15 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Getter
 public class QueryBuilder {
 
-    private final List<DisjunctionMaxQueryBuilder> dmqs;
+    private final List<DisjunctionMaxQueryBuilder> clauses;
 
-    private QueryBuilder(final List<DisjunctionMaxQueryBuilder> dmqs) {
-        this.dmqs = dmqs;
+    private QueryBuilder(final List<DisjunctionMaxQueryBuilder> clauses) {
+        this.clauses = clauses;
     }
 
     public QueryBuilder setParent(final Node parent) {
@@ -25,18 +30,24 @@ public class QueryBuilder {
     }
 
     public QueryBuilder addDmqBuilder(final DisjunctionMaxQueryBuilder builder) {
-        this.dmqs.add(builder);
+        this.clauses.add(builder);
         return this;
     }
 
-    public List<DisjunctionMaxQueryBuilder> getDmqs() {
-        return dmqs;
+    public List<DisjunctionMaxQueryBuilder> getClauses() {
+        return clauses;
     }
 
     public Query build() {
-        final Query query = new Query();
-        dmqs.stream().map(dmq -> dmq.setParent(query).build()).forEach(query::addClause);
-        return query;
+//        final Query query = new Query();
+//        clauses.stream().map(dmq -> dmq.setParent(query).build()).forEach(query::addClause);
+//        return query;
+        return null;
+    }
+
+    public Map<String, Object> toMap() {
+        return null;
+
     }
 
     public static QueryBuilder builder() {
@@ -76,9 +87,17 @@ public class QueryBuilder {
                 .collect(Collectors.toList()));
     }
 
+    @JsonGetter("clauses")
+    //@JsonValue
+    public List<Map<String, DisjunctionMaxQueryBuilder>> serializeClauses() {
+        return this.clauses.stream()
+                .map(clause -> Collections.singletonMap("dmq", clause))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
-        return dmqs.stream()
+        return clauses.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", ", "query[", "]")) ;
     }
@@ -88,11 +107,11 @@ public class QueryBuilder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         QueryBuilder builder = (QueryBuilder) o;
-        return Objects.equals(dmqs, builder.dmqs);
+        return Objects.equals(clauses, builder.clauses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dmqs);
+        return Objects.hash(clauses);
     }
 }

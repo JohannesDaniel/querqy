@@ -1,87 +1,116 @@
 package querqy.model.builder;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import querqy.ComparableCharSequence;
-import querqy.ComparableCharSequenceWrapper;
+import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
+import querqy.model.builder.BuilderUtils.QueryBuilderMap;
 
+import java.util.Map;
 import java.util.Objects;
 
-public class TermBuilder implements DisjunctionMaxClauseBuilder {
+import static querqy.model.builder.model.MapField.FIELD;
+import static querqy.model.builder.model.MapField.IS_GENERATED;
+import static querqy.model.builder.model.MapField.VALUE;
 
-    private DisjunctionMaxQuery parent;
+@Accessors(chain = true)
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode
+@ToString
+public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Term> {
 
-    private final ComparableCharSequence seq;
-    private final String field;
-    private final boolean isGenerated;
+    public static final String TYPE_NAME = "term";
 
-    private TermBuilder(final DisjunctionMaxQuery parent,
-                        final ComparableCharSequence seq,
-                        final String field,
-                        final boolean isGenerated) {
-        this.parent = parent;
-        this.seq = seq;
-        this.field = field;
-        this.isGenerated = isGenerated;
+    private String value;
+    private String field;
+    private boolean isGenerated;
+
+    @Override
+    public Term build(final DisjunctionMaxQuery parent) {
+        Objects.requireNonNull(this.value, "The value of a term must not be null");
+        return new Term(parent, field, value, isGenerated);
     }
 
     @Override
-    public TermBuilder setParent(final DisjunctionMaxQuery dmq) {
-        this.parent = dmq;
+    public DisjunctionMaxClause buildDmc(DisjunctionMaxQuery parent) {
+        return build(parent);
+    }
+
+    @Override
+    public Map<String, Object> attributesToMap() {
+        Objects.requireNonNull(this.value, "The value of a term must not be null");
+
+        final QueryBuilderMap map = new QueryBuilderMap();
+        map.put(VALUE.fieldName, this.value);
+        map.putIfNotNull(FIELD.fieldName, this.field);
+        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
+
+        return map;
+    }
+
+    @Override
+    public TermBuilder setAttributesFromMap(final Map map) throws QueryBuilderException {
+        BuilderUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
+        BuilderUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
+        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+
         return this;
     }
 
-    public Term build() {
-        return new Term(this.parent, field, seq, isGenerated);
-    }
-
-    public static TermBuilder fromQuery(Term term) {
-        return term(
-                term.getComparableCharSequence(),
-                term.getField(),
-                term.isGenerated()
-        );
-    }
-
-    public static TermBuilder term(final ComparableCharSequence seq, final String field, final boolean isGenerated) {
-        return new TermBuilder(null, seq, field, isGenerated);
-    }
-
-    public static TermBuilder term(final String seq, final String field, final boolean isGenerated) {
-        return term(new ComparableCharSequenceWrapper(seq), field, isGenerated);
-    }
-
-    public static TermBuilder term(final String seq, final boolean isGenerated) {
-        return term(new ComparableCharSequenceWrapper(seq), null, isGenerated);
-    }
-
-    public static TermBuilder term(final ComparableCharSequence seq) {
-        return term(seq, null, false);
-    }
-
-    public static TermBuilder term(final String seq) {
-        return term(new ComparableCharSequenceWrapper(seq), null, false);
-    }
-
-
     @Override
-    public String toString() {
-        return seq.toString();
+    public TermBuilder setAttributesFromObject(final Term term) {
+        this.setValue(term.getComparableCharSequence().toString());
+        this.setField(term.getField());
+        this.setGenerated(term.isGenerated());
+
+        return this;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TermBuilder that = (TermBuilder) o;
-        return isGenerated == that.isGenerated &&
-                Objects.equals(parent, that.parent) &&
-                Objects.equals(seq, that.seq) &&
-                Objects.equals(field, that.field);
+    public String getBuilderName() {
+        return TYPE_NAME;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(parent, seq, field, isGenerated);
+//    public static TermBuilder fromMap(final Map<String, Object> map) {
+//        // final Object
+//
+//
+//
+//        return term().setAttributesFromMap(map);
+//    }
+
+    public static TermBuilder fromQuery(final Term term) {
+        return term().setAttributesFromObject(term);
+    }
+
+    public static TermBuilder term(final String value, final String field, final boolean isGenerated) {
+        return new TermBuilder(value, field, isGenerated);
+    }
+
+    public static TermBuilder term(final String value, final boolean isGenerated) {
+        return term(value, null, isGenerated);
+    }
+
+    public static TermBuilder term(final ComparableCharSequence value) {
+        return term(value.toString(), null, false);
+    }
+
+    public static TermBuilder term(final String value) {
+        return term(value, null, false);
+    }
+
+    public static TermBuilder term() {
+        return new TermBuilder();
     }
 }
