@@ -1,4 +1,4 @@
-package querqy.model.builder;
+package querqy.model.builder.impl;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,11 +10,28 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static querqy.model.builder.BooleanQueryBuilder.bool;
-import static querqy.model.builder.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.TermBuilder.term;
+import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
+import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
+import static querqy.model.builder.impl.TermBuilder.term;
 
 public class QueryBuilderTest {
+
+    @Test
+    public void testSetAttributesFromMap() {
+    }
+
+    @Test
+    public void testBuilderToMap() {
+    }
+
+    @Test
+    public void testBuild() {
+    }
+
+    @Test
+    public void testSetAttributesFromObject() {
+    }
+
 
     @Test
     public void test3() {
@@ -57,7 +74,7 @@ public class QueryBuilderTest {
                         .convertValue(dmq, Map.class)
         );
 
-        QueryBuilder query = QueryBuilder.query(dmq("a", "b"), dmq(term("c"), bool("d", "e")));
+        QueryBuilder query = QueryBuilder.query(dmq("a", "b"), dmq(term("c"), bq("d", "e")));
         System.out.println(query);
 
         System.out.println(
@@ -86,7 +103,7 @@ public class QueryBuilderTest {
 //        System.out.println(dmq);
 //        System.out.println(objectWriter.writeValueAsString(dmq));
 //
-        QueryBuilder query = QueryBuilder.query(dmq("a", "b"), dmq(term("c"), bool("d", "e")));
+        QueryBuilder query = QueryBuilder.query(dmq("a", "b"), dmq(term("c"), bq("d", "e")));
         System.out.println(query);
         System.out.println(objectWriter.writeValueAsString(query));
 

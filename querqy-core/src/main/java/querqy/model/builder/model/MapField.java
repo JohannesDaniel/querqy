@@ -9,7 +9,12 @@ public enum MapField {
     OCCUR("occur"),
 
     VALUE("value"),
-    FIELD("field");
+    FIELD("field"),
+
+    USER_QUERY("user_query"),
+    FILTER_QUERIES("filter_queries"),
+    BOOST_UP_QUERIES("boost_up_queries"),
+    BOOST_DOWN_QUERIES("boost_down_queries");
 
     public final String fieldName;
 }

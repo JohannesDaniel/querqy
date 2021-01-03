@@ -15,12 +15,6 @@ public class BuilderUtils {
 
     private BuilderUtils() {}
 
-    public static Optional<Map> getMapForExpectedKey(final String expectedKey, final Map map) {
-        return castMap(map.get(expectedKey));
-    }
-
-    // public static Object expectMapToContainExactlyOneEntry(final Map map, final String expectedKey) throws QueryBuilderException {
-
     public static String expectMapToContainExactlyOneEntryAndGetKey(final Map map) {
         if (map.size() == 1) {
             return map.keySet().iterator().next().toString();

@@ -3,24 +3,26 @@ package querqy.solr;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.json.DirectJsonQueryRequest;
+import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.params.DisMaxParams;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.request.SolrQueryRequest;
 import org.apache.solr.search.QueryParsing;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import querqy.model.builder.DisjunctionMaxQueryBuilder;
-import querqy.model.builder.QueryBuilder;
-import querqy.model.builder.TermBuilder;
+import querqy.model.builder.impl.BooleanQueryBuilder;
+import querqy.model.builder.impl.DisjunctionMaxQueryBuilder;
+import querqy.model.builder.impl.ExpandedQueryBuilder;
+import querqy.model.builder.impl.QueryBuilder;
+import querqy.model.builder.impl.TermBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,9 +34,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static querqy.model.builder.BooleanQueryBuilder.bool;
-import static querqy.model.builder.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.TermBuilder.term;
+import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
+import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.expanded;
+import static querqy.model.builder.impl.QueryBuilder.query;
+import static querqy.model.builder.impl.TermBuilder.term;
+import static querqy.model.builder.model.Occur.MUST;
+import static querqy.model.builder.model.Occur.SHOULD;
 
 
 @SolrTestCaseJ4.SuppressSSL
@@ -43,7 +49,7 @@ public class ExploreEnhancedQuerqyAPI extends SolrJettyTestBase {
     @BeforeClass
     public static void beforeTests() throws Exception {
         initCore("solrconfig-external-rewriting.xml", "schema.xml");
-        //addDocs();
+        addDocs();
     }
 
     private static void addDocs() {
@@ -58,6 +64,61 @@ public class ExploreEnhancedQuerqyAPI extends SolrJettyTestBase {
         assertU(adoc("id", "30", "f1", "smartphone"));
 
         assertU(commit());
+    }
+
+    @Test
+    public void test11Query() throws IOException, SolrServerException {
+        BooleanQueryBuilder query = bq(
+                dmq("tv"),
+                dmq(
+                        term("smartphone"),
+                        bq(
+                                dmq("television").setOccur(MUST),
+                                dmq("schwarz").setOccur(MUST)
+                        )
+                )
+        );
+
+//        BooleanQueryBuilder query = bq(
+//                dmq("tv"),
+//                dmq(term("b"), bq("c", "d")));
+//
+
+        ExpandedQueryBuilder expandedQuery = expanded(query);
+
+        Map<String, Object> request = new HashMap<>();
+
+        request.put("query", expandedQuery.toMap());
+        request.put("mm", "0%");
+        request.put("omitHeader", "true");
+        request.put("tie", 0.0f);
+        request.put("uq.similarityScore", "off");
+        request.put("qf", "f1^30 f2^10");
+
+//        System.out.println(objectWriter.writeValueAsString(Collections.singletonMap("query",
+//                Collections.singletonMap("querqy", request))));
+
+
+        SolrClient solrClient = super.getSolrClient();
+
+        final ModifiableSolrParams params = new ModifiableSolrParams();
+        params.add("fl", "*,score");
+        params.add("facet", "true");
+        params.add("facet.field", "f2");
+
+        final JsonQueryRequest jsonQuery = new JsonQueryRequest(params)
+                .setQuery(Collections.singletonMap("querqy", request));
+
+
+        final QueryResponse response = jsonQuery.process(solrClient, "collection1");
+
+        for (SolrDocument doc : response.getResults()) {
+            System.out.println(doc);
+        }
+
+        System.out.println(response.getFacetFields());
+
+
     }
 
     @Test
@@ -91,12 +152,7 @@ public class ExploreEnhancedQuerqyAPI extends SolrJettyTestBase {
                         Collections.singletonMap("query",
                                 Collections.singletonMap("querqy", request))));
 
-        // System.out.println(req);
-
         final QueryResponse response = jsonQuery.process(solrClient, "collection1");
-
-
-
     }
 
     @Test
@@ -145,7 +201,7 @@ public class ExploreEnhancedQuerqyAPI extends SolrJettyTestBase {
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .writerWithDefaultPrettyPrinter();
 
-        QueryBuilder query = QueryBuilder.query(dmq("a", "b"), dmq(term("c"), bool("d", "e")));
+        QueryBuilder query = query(dmq("a", "b"), dmq(term("c"), bq("d", "e")));
         // QuerqyQuery querqyQuery = new QuerqyQuery(query, "100%", 0.0f);
         // System.out.println(query);
         // System.out.println(objectWriter.writeValueAsString(querqyQuery));

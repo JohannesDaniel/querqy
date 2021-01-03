@@ -1,10 +1,9 @@
-package querqy.model.builder;
+package querqy.model.builder.impl;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -12,7 +11,9 @@ import querqy.ComparableCharSequence;
 import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
+import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.BuilderUtils.QueryBuilderMap;
+import querqy.model.builder.DisjunctionMaxClauseBuilder;
 
 import java.util.Map;
 import java.util.Objects;
@@ -24,17 +25,34 @@ import static querqy.model.builder.model.MapField.VALUE;
 @Accessors(chain = true)
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Term> {
 
-    public static final String TYPE_NAME = "term";
+    public static final String NAME_OF_QUERY_TYPE = "term";
 
     private String value;
     private String field;
     private boolean isGenerated;
+
+    public TermBuilder(final Term term) {
+        this.setAttributesFromObject(term);
+    }
+
+    public TermBuilder(final Map map) {
+        this.setAttributesFromWrappedMap(map);
+    }
+
+    public TermBuilder(final String value) {
+        this.value = value;
+    }
+
+    // @Override
+    public void setDefaults() {
+        // No defaults are needed to be set here; isGenerated is automatically set to false, field is allowed to be
+        // null and value does not have a default
+    }
 
     @Override
     public Term build(final DisjunctionMaxQuery parent) {
@@ -43,7 +61,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
-    public DisjunctionMaxClause buildDmc(DisjunctionMaxQuery parent) {
+    public DisjunctionMaxClause buildDisjunctionMaxClause(DisjunctionMaxQuery parent) {
         return build(parent);
     }
 
@@ -60,7 +78,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
-    public TermBuilder setAttributesFromMap(final Map map) throws QueryBuilderException {
+    public TermBuilder setAttributesFromMap(final Map map) {
         BuilderUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
         BuilderUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
         BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
@@ -78,20 +96,8 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
-    public String getBuilderName() {
-        return TYPE_NAME;
-    }
-
-//    public static TermBuilder fromMap(final Map<String, Object> map) {
-//        // final Object
-//
-//
-//
-//        return term().setAttributesFromMap(map);
-//    }
-
-    public static TermBuilder fromQuery(final Term term) {
-        return term().setAttributesFromObject(term);
+    public String getNameOfQueryType() {
+        return NAME_OF_QUERY_TYPE;
     }
 
     public static TermBuilder term(final String value, final String field, final boolean isGenerated) {
@@ -99,18 +105,22 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     public static TermBuilder term(final String value, final boolean isGenerated) {
-        return term(value, null, isGenerated);
+        return new TermBuilder(value, null, isGenerated);
     }
 
     public static TermBuilder term(final ComparableCharSequence value) {
-        return term(value.toString(), null, false);
+        return new TermBuilder(value.toString());
     }
 
     public static TermBuilder term(final String value) {
-        return term(value, null, false);
+        return new TermBuilder(value);
     }
 
-    public static TermBuilder term() {
-        return new TermBuilder();
+    public static TermBuilder term(final Map map) {
+        return new TermBuilder(map);
+    }
+
+    public static TermBuilder term(final Term term) {
+        return new TermBuilder(term);
     }
 }

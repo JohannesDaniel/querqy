@@ -1,8 +1,10 @@
 package querqy.solr;
 
 import static org.apache.solr.common.SolrException.ErrorCode.*;
-import static querqy.model.builder.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.TermBuilder.term;
+import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.expanded;
+import static querqy.model.builder.impl.QueryBuilder.query;
+import static querqy.model.builder.impl.TermBuilder.term;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -22,9 +24,9 @@ import querqy.lucene.LuceneQueries;
 import querqy.lucene.QueryParsingController;
 import querqy.lucene.LuceneSearchEngineRequestAdapter;
 import querqy.lucene.rewrite.cache.TermQueryCache;
-import querqy.model.builder.DisjunctionMaxQueryBuilder;
+import querqy.model.builder.impl.ExpandedQueryBuilder;
+import querqy.model.builder.impl.QueryBuilder;
 import querqy.model.builder.QueryBuilderException;
-import querqy.model.builder.TermBuilder;
 import querqy.parser.QuerqyParser;
 import querqy.rewrite.RewriteChain;
 import querqy.rewrite.SearchEngineRequestAdapter;
@@ -66,28 +68,10 @@ public class QuerqyDismaxQParser extends QParser {
         super(qstr, localParams, params, req);
         final String q = Objects.requireNonNull(qstr).trim();
 
-
-        Map map = (Map) ((Map) ((Map) req.getJSON().get("query")).get("querqy")).get("clauses");
-
-        try {
-            DisjunctionMaxQueryBuilder dmq = dmq().setAttributesFromWrappedMap(map);
-
-            System.out.println(dmq);
-
-
-        } catch (QueryBuilderException e) {
-            e.printStackTrace();
-        }
-
-        /*
-        TODO: This needs to be adjusted. Should also accept JSON input
-          - spell correction?
-
-         */
-
         if (q.isEmpty()) {
             throw new SolrException(BAD_REQUEST, "Query string must not be empty");
         }
+
         this.userQueryString = q;
         this.querqyParser = querqyParser;
 
@@ -95,8 +79,12 @@ public class QuerqyDismaxQParser extends QParser {
                 SolrParams.wrapDefaults(localParams, params), querqyParser, rewriteChain, infoLogging, termQueryCache);
 
 
-        controller = new QueryParsingController(requestAdapter);
+        controller = createQueryParsingController();
 
+    }
+
+    public QueryParsingController createQueryParsingController() {
+        return new QueryParsingController(requestAdapter);
     }
 
 

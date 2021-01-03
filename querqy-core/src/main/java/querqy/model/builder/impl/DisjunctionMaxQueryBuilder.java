@@ -1,4 +1,4 @@
-package querqy.model.builder;
+package querqy.model.builder.impl;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,9 @@ import lombok.experimental.Accessors;
 import querqy.ComparableCharSequence;
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxQuery;
-import querqy.model.Term;
+import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.Occur;
 
 import java.util.ArrayList;
@@ -21,29 +23,58 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static querqy.model.builder.model.MapField.CLAUSES;
 import static querqy.model.builder.model.MapField.IS_GENERATED;
 import static querqy.model.builder.model.MapField.OCCUR;
+import static querqy.model.builder.model.Occur.SHOULD;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
 @Accessors(chain = true)
 @Getter
 @Setter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class DisjunctionMaxQueryBuilder implements QuerqyQueryBuilder<DisjunctionMaxQueryBuilder, DisjunctionMaxQuery, BooleanQuery> {
+public class DisjunctionMaxQueryBuilder implements
+        QueryNodeBuilder<DisjunctionMaxQueryBuilder, DisjunctionMaxQuery, BooleanQuery> {
 
-    private static final String BUILDER_NAME = "dmq";
+    public static final String NAME_OF_QUERY_TYPE = "disjunction_max_query";
 
     private List<DisjunctionMaxClauseBuilder> clauses;
     private Occur occur;
     private boolean isGenerated;
 
+    public DisjunctionMaxQueryBuilder(final DisjunctionMaxQuery dmq) {
+        this.setAttributesFromObject(dmq);
+        this.setDefaults();
+    }
+
+    public DisjunctionMaxQueryBuilder(final Map map) {
+        this.setAttributesFromWrappedMap(map);
+        this.setDefaults();
+    }
+
+    public DisjunctionMaxQueryBuilder(final List<DisjunctionMaxClauseBuilder> clauses) {
+        this.clauses = clauses;
+        this.setDefaults();
+    }
+
+    @Override
+    public void setDefaults() {
+        if (isNull(this.clauses)) {
+            this.setClauses(Collections.emptyList());
+        }
+
+        if (isNull(this.occur)) {
+            this.setOccur(SHOULD);
+        }
+    }
+
     @Override
     public DisjunctionMaxQuery build(final BooleanQuery parent) {
         final DisjunctionMaxQuery dmq = new DisjunctionMaxQuery(parent, this.occur.objectForClause, this.isGenerated);
-        getClauses().stream().map(clause -> clause.buildDmc(dmq)).forEach(dmq::addClause);
+        clauses.stream().map(clause -> clause.buildDisjunctionMaxClause(dmq)).forEach(dmq::addClause);
 
         return dmq;
     }
@@ -51,18 +82,7 @@ public class DisjunctionMaxQueryBuilder implements QuerqyQueryBuilder<Disjunctio
     @Override
     public DisjunctionMaxQueryBuilder setAttributesFromObject(final DisjunctionMaxQuery dmq) {
         final List<DisjunctionMaxClauseBuilder> clausesFromObject = dmq.getClauses().stream()
-                .map(clause -> {
-
-                    if (clause instanceof Term) {
-                        return TermBuilder.fromQuery((Term) clause);
-
-                    } else if (clause instanceof BooleanQuery){
-                        return BooleanQueryBuilder.fromQuery((BooleanQuery) clause);
-
-                    } else {
-                        throw new QueryBuilderException("The structure of this query is currently not supported by builders");
-                    }})
-
+                .map(BuilderFactory::createDisjunctionMaxClauseBuilderFromObject)
                 .collect(Collectors.toList());
 
         this.setClauses(clausesFromObject);
@@ -73,15 +93,15 @@ public class DisjunctionMaxQueryBuilder implements QuerqyQueryBuilder<Disjunctio
     }
 
     @Override
-    public String getBuilderName() {
-        return BUILDER_NAME;
+    public String getNameOfQueryType() {
+        return NAME_OF_QUERY_TYPE;
     }
 
     @Override
     public Map<String, Object> attributesToMap() {
         final BuilderUtils.QueryBuilderMap map = new BuilderUtils.QueryBuilderMap();
 
-        map.put(CLAUSES.fieldName, clauses.stream().map(QuerqyQueryBuilder::toMap).collect(Collectors.toList()));
+        map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
         map.put(OCCUR.fieldName, this.occur.typeName);
         map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
 
@@ -92,26 +112,12 @@ public class DisjunctionMaxQueryBuilder implements QuerqyQueryBuilder<Disjunctio
     public DisjunctionMaxQueryBuilder setAttributesFromMap(final Map map) {
         final List<DisjunctionMaxClauseBuilder> parsedClauses = new ArrayList<>();
 
-        // TODO: Map should also be fine here as SingletonList
         final List rawClauses = BuilderUtils.castList(map.get(CLAUSES.fieldName)).orElse(Collections.emptyList());
 
         for (final Object rawClause : rawClauses) {
             final Optional<Map> optionalClause = BuilderUtils.castMap(rawClause);
-
-            if (optionalClause.isPresent()) {
-                final Map wrappedClause = optionalClause.get();
-                final String keyOfClause = BuilderUtils.expectMapToContainExactlyOneEntryAndGetKey(wrappedClause);
-
-                if (TermBuilder.TYPE_NAME.equals(keyOfClause)) {
-                    parsedClauses.add(TermBuilder.term().setAttributesFromWrappedMap(wrappedClause));
-
-                } else if (false) {
-                    // TODO: BQ
-
-                } else {
-                    throw new QueryBuilderException(String.format("Clauses of name %s are unknown", keyOfClause));
-                }
-            }
+            optionalClause.ifPresent(wrappedClause -> parsedClauses.add(
+                    BuilderFactory.createDisjunctionMaxClauseBuilderFromMap(wrappedClause)));
         }
 
         this.setClauses(Collections.unmodifiableList(parsedClauses));
@@ -121,31 +127,26 @@ public class DisjunctionMaxQueryBuilder implements QuerqyQueryBuilder<Disjunctio
         return this;
     }
 
-    public static DisjunctionMaxQueryBuilder fromQuery(final DisjunctionMaxQuery dmq) {
-        return dmq().setAttributesFromObject(dmq);
-    }
-
-    public static DisjunctionMaxQueryBuilder dmq() {
-        return dmq(Collections.emptyList());
-    }
-
-    public static DisjunctionMaxQueryBuilder dmq(final List<DisjunctionMaxClauseBuilder> clauses, final Occur occur, boolean isGenerated) {
+    public static DisjunctionMaxQueryBuilder dmq(
+            final List<DisjunctionMaxClauseBuilder> clauses, final Occur occur, boolean isGenerated) {
         return new DisjunctionMaxQueryBuilder(clauses, occur, isGenerated);
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final List<DisjunctionMaxClauseBuilder> clauses) {
-        return dmq(clauses, Occur.SHOULD, false);
+        return new DisjunctionMaxQueryBuilder(clauses);
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final DisjunctionMaxClauseBuilder... clauses) {
-        return dmq(Arrays.asList(clauses));
+        return new DisjunctionMaxQueryBuilder(Arrays.asList(clauses));
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final ComparableCharSequence... terms) {
-        return dmq(Arrays.stream(terms).map(TermBuilder::term).toArray(DisjunctionMaxClauseBuilder[]::new));
+        return new DisjunctionMaxQueryBuilder(
+                Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final String... terms) {
-        return dmq(Arrays.stream(terms).map(TermBuilder::term).toArray(DisjunctionMaxClauseBuilder[]::new));
+        return new DisjunctionMaxQueryBuilder(
+                Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
     }
 }

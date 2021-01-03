@@ -3,6 +3,7 @@ package querqy.model.builder;
 import lombok.Data;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,5 +21,10 @@ public abstract class AbstractBuilderTest {
     public static class Entry {
         final String key;
         final Object value;
+    }
+
+    @SafeVarargs
+    public final <T> List<T> list(final T... elements) {
+        return Arrays.asList(elements);
     }
 }
