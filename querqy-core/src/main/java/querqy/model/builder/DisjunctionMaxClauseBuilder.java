@@ -6,5 +6,7 @@ import querqy.model.DisjunctionMaxQuery;
 public interface DisjunctionMaxClauseBuilder<B, O extends DisjunctionMaxClause>
         extends QueryNodeBuilder<B, O, DisjunctionMaxQuery> {
 
-    DisjunctionMaxClause buildDisjunctionMaxClause(final DisjunctionMaxQuery parent);
+    default DisjunctionMaxClause buildDisjunctionMaxClause(final DisjunctionMaxQuery parent) {
+        return build(parent);
+    }
 }

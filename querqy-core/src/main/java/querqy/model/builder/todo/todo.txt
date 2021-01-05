@@ -1,4 +1,12 @@
+Set Defaults:
+- default methon in interface
+- remove the check in all classes
+- add tests
+
 - setdefaults in build?
+- setAndCheckDefaults in build / tomap
+
+
 
 - Occur for match all
 

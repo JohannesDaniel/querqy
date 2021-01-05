@@ -7,7 +7,7 @@ import java.util.Collections;
 import static querqy.model.builder.model.Occur.SHOULD;
 
 @AllArgsConstructor
-public enum MapField {
+public enum BuilderFieldProperties {
     CLAUSES("clauses", Collections.emptyList()),
     IS_GENERATED("is_generated", false),
     OCCUR("occur", SHOULD),

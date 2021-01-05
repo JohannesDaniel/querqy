@@ -1,6 +1,5 @@
 package querqy.model.builder.impl;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,9 +23,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static querqy.model.builder.model.MapField.CLAUSES;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.OCCUR;
+import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 import static querqy.model.builder.model.Occur.SHOULD;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
@@ -109,17 +108,8 @@ public class DisjunctionMaxQueryBuilder implements
 
     @Override
     public DisjunctionMaxQueryBuilder setAttributesFromMap(final Map map) {
-        final List<DisjunctionMaxClauseBuilder> parsedClauses = new ArrayList<>();
-
-        final List rawClauses = BuilderUtils.castList(map.get(CLAUSES.fieldName)).orElse(Collections.emptyList());
-
-        for (final Object rawClause : rawClauses) {
-            final Optional<Map> optionalClause = BuilderUtils.castMap(rawClause);
-            optionalClause.ifPresent(wrappedClause -> parsedClauses.add(
-                    BuilderFactory.createDisjunctionMaxClauseBuilderFromMap(wrappedClause)));
-        }
-
-        this.setClauses(Collections.unmodifiableList(parsedClauses));
+        this.setClauses(BuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName),
+                BuilderFactory::createDisjunctionMaxClauseBuilderFromMap));
         BuilderUtils.castOccur(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
         BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 

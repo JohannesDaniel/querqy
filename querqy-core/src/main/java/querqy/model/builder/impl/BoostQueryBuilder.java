@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import querqy.model.BoostQuery;
-import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
@@ -18,8 +17,8 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 import static querqy.model.builder.BuilderUtils.castFloatOrDoubleToFloat;
 import static querqy.model.builder.BuilderUtils.castMap;
-import static querqy.model.builder.model.MapField.BOOST;
-import static querqy.model.builder.model.MapField.QUERY;
+import static querqy.model.builder.model.BuilderFieldProperties.BOOST;
+import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
 
 @Accessors(chain = true)
 @Getter

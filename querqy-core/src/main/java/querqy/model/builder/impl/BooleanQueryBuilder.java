@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static querqy.model.builder.model.MapField.CLAUSES;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.OCCUR;
+import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 import static querqy.model.builder.model.Occur.SHOULD;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
@@ -78,13 +78,6 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
         final BooleanQuery bq = new BooleanQuery(parent, this.occur.objectForClause, this.isGenerated);
         clauses.stream().map(dmq -> dmq.build(bq)).forEach(bq::addClause);
         return bq;
-    }
-
-    @Override
-    public DisjunctionMaxClause buildDisjunctionMaxClause(final DisjunctionMaxQuery parent) {
-        setDefaults();
-
-        return this.build(parent);
     }
 
     @Override
@@ -138,18 +131,8 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     @Override
     public BooleanQueryBuilder setAttributesFromMap(final Map map) {
-        final List<DisjunctionMaxQueryBuilder> parsedClauses = new ArrayList<>();
+        this.setClauses(BuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName), DisjunctionMaxQueryBuilder::new));
 
-        final List rawClauses = BuilderUtils.castList(map.get(CLAUSES.fieldName)).orElse(Collections.emptyList());
-
-        for (final Object rawClause : rawClauses) {
-            final Optional<Map> optionalWrappedClause = BuilderUtils.castMap(rawClause);
-
-            optionalWrappedClause.ifPresent(
-                    wrappedClause -> parsedClauses.add(new DisjunctionMaxQueryBuilder(wrappedClause)));
-        }
-
-        this.setClauses(Collections.unmodifiableList(parsedClauses));
         BuilderUtils.castOccur(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
         BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 

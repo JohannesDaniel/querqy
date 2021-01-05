@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface BuilderField {
-    boolean mandatory() default false;
-    MapField field();
+    boolean fieldIsMandatory() default true;
+    BuilderFieldProperties fieldProperties();
 }

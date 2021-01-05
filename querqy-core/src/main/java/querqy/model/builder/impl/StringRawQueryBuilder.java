@@ -17,9 +17,9 @@ import querqy.model.builder.model.Occur;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.OCCUR;
-import static querqy.model.builder.model.MapField.QUERY;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
+import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
 import static querqy.model.builder.model.Occur.SHOULD;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 

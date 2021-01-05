@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static querqy.model.builder.model.MapField.BOOST_DOWN_QUERIES;
-import static querqy.model.builder.model.MapField.BOOST_UP_QUERIES;
-import static querqy.model.builder.model.MapField.FILTER_QUERIES;
-import static querqy.model.builder.model.MapField.USER_QUERY;
+import static querqy.model.builder.model.BuilderFieldProperties.BOOST_DOWN_QUERIES;
+import static querqy.model.builder.model.BuilderFieldProperties.BOOST_UP_QUERIES;
+import static querqy.model.builder.model.BuilderFieldProperties.FILTER_QUERIES;
+import static querqy.model.builder.model.BuilderFieldProperties.USER_QUERY;
 
 @Accessors(chain = true)
 @Getter

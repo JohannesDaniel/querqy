@@ -12,15 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
 import static querqy.model.builder.impl.MatchAllQueryBuilder.matchall;
-import static querqy.model.builder.model.MapField.CLAUSES;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.OCCUR;
+import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 
 public class BooleanQueryBuilderTest extends AbstractBuilderTest {
 
     @Test
     public void test() {
-        matchall().setDefaults();
+        matchall().checkAndSetDefaults();
     }
 
     @Test

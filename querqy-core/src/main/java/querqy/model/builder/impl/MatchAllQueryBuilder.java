@@ -15,6 +15,7 @@ import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.model.BuilderField;
+import querqy.model.builder.model.BuilderFieldProperties;
 import querqy.model.builder.model.Occur;
 
 import java.lang.reflect.Field;
@@ -22,9 +23,8 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.OCCUR;
-import static querqy.model.builder.model.Occur.SHOULD;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
 @Accessors(chain = true)
@@ -38,10 +38,10 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     public static final String NAME_OF_QUERY_TYPE = "match_all_query";
 
-    @BuilderField(field = IS_GENERATED)
+    @BuilderField(fieldProperties = IS_GENERATED)
     private Boolean isGenerated;
 
-    @BuilderField(field = OCCUR)
+    @BuilderField(fieldProperties = OCCUR)
     private Occur occur;
 
     public MatchAllQueryBuilder(final MatchAllQuery matchAllQuery) {
@@ -52,63 +52,52 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
         this.setAttributesFromWrappedMap(map);
     }
 
-
     @Override
-    public QuerqyQuery<?> buildQuerqyQuery() {
-        return new MatchAllQuery(isGenerated);
+    public Class<MatchAllQueryBuilder> getBuilderClass() {
+        return MatchAllQueryBuilder.class;
     }
 
     @Override
-    public void setDefaults() {
-        final Field[] fields = MatchAllQueryBuilder.class.getDeclaredFields();
-
-        for (final Field field : fields) {
-            final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
-
-            if (nonNull(fieldAnnotation)) {
-                try {
-                    final Object fieldValue = field.get(this);
-                    if (isNull(fieldValue)) {
-
-
-                    }
-
-
-                } catch (IllegalAccessException e) {
-                    throw new QueryBuilderException(
-                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
-                }
-            }
-
-            // Field has annotation?
-            // Field is set?
-            // Field has is mandatory / has default?
-            // Set default / throw
-
-
-            System.out.println(field.getName());
-            try {
-                System.out.println(field.get(this));
-                System.out.println(field.getAnnotatedType());
-                System.out.println(field.get(this));
-                System.out.println(field.getAnnotation(BuilderField.class));
-                // field.set(this, "ab");
-
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            System.out.println();
-        }
-
-        if (isNull(this.occur)) {
-            this.setOccur(SHOULD);
-        }
+    public MatchAllQueryBuilder getBuilder() {
+        return this;
     }
 
     @Override
     public MatchAllQuery build(final DisjunctionMaxQuery parent) {
         setDefaults();
         return new MatchAllQuery(parent, Clause.Occur.SHOULD, isGenerated);
+    }
+
+    @Override
+    public void setDefaults() {
+//        final Field[] fields = MatchAllQueryBuilder.class.getDeclaredFields();
+//
+//        for (final Field field : fields) {
+//            final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
+//
+//            if (nonNull(fieldAnnotation)) {
+//                final BuilderFieldProperties properties = fieldAnnotation.fieldProperties();
+//
+//                try {
+//                    final Object fieldValue = field.get(this);
+//                    if (isNull(fieldValue)) {
+//                        final Object defaulValue = properties.defaultValue;
+//
+//                        if (isNull(defaulValue) && fieldAnnotation.fieldIsMandatory()) {
+//                            throw new QueryBuilderException(
+//                                    String.format("Field %s is mandatory for builder %s",
+//                                            field.getName(), getNameOfQueryType()));
+//                        }
+//
+//                        field.set(this, defaulValue);
+//                    }
+//
+//                } catch (IllegalAccessException e) {
+//                    throw new QueryBuilderException(
+//                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
+//                }
+//            }
+//        }
     }
 
     @Override

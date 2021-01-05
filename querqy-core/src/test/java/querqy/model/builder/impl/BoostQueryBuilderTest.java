@@ -11,8 +11,8 @@ import querqy.model.builder.AbstractBuilderTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.BoostQueryBuilder.boost;
-import static querqy.model.builder.model.MapField.BOOST;
-import static querqy.model.builder.model.MapField.QUERY;
+import static querqy.model.builder.model.BuilderFieldProperties.BOOST;
+import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
 
 public class BoostQueryBuilderTest extends AbstractBuilderTest {
 

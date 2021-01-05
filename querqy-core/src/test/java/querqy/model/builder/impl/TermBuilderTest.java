@@ -5,9 +5,9 @@ import querqy.model.Term;
 import querqy.model.builder.AbstractBuilderTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static querqy.model.builder.model.MapField.VALUE;
-import static querqy.model.builder.model.MapField.FIELD;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.VALUE;
+import static querqy.model.builder.model.BuilderFieldProperties.FIELD;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
 import static querqy.model.builder.impl.TermBuilder.term;
 
 public class TermBuilderTest extends AbstractBuilderTest {

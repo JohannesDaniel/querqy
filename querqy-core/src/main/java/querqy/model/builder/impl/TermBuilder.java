@@ -1,6 +1,5 @@
 package querqy.model.builder.impl;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,12 +15,11 @@ import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QueryBuilderException;
 
 import java.util.Map;
-import java.util.Objects;
 
 import static java.util.Objects.isNull;
-import static querqy.model.builder.model.MapField.FIELD;
-import static querqy.model.builder.model.MapField.IS_GENERATED;
-import static querqy.model.builder.model.MapField.VALUE;
+import static querqy.model.builder.model.BuilderFieldProperties.FIELD;
+import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldProperties.VALUE;
 
 @Accessors(chain = true)
 @Getter
