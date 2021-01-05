@@ -47,17 +47,14 @@ public class DisjunctionMaxQueryBuilder implements
 
     public DisjunctionMaxQueryBuilder(final DisjunctionMaxQuery dmq) {
         this.setAttributesFromObject(dmq);
-        this.setDefaults();
     }
 
     public DisjunctionMaxQueryBuilder(final Map map) {
         this.setAttributesFromWrappedMap(map);
-        this.setDefaults();
     }
 
     public DisjunctionMaxQueryBuilder(final List<DisjunctionMaxClauseBuilder> clauses) {
         this.clauses = clauses;
-        this.setDefaults();
     }
 
     @Override
@@ -73,6 +70,8 @@ public class DisjunctionMaxQueryBuilder implements
 
     @Override
     public DisjunctionMaxQuery build(final BooleanQuery parent) {
+        setDefaults();
+
         final DisjunctionMaxQuery dmq = new DisjunctionMaxQuery(parent, this.occur.objectForClause, this.isGenerated);
         clauses.stream().map(clause -> clause.buildDisjunctionMaxClause(dmq)).forEach(dmq::addClause);
 
@@ -99,7 +98,7 @@ public class DisjunctionMaxQueryBuilder implements
 
     @Override
     public Map<String, Object> attributesToMap() {
-        final BuilderUtils.QueryBuilderMap map = new BuilderUtils.QueryBuilderMap();
+        final QueryBuilderMap map = new QueryBuilderMap();
 
         map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
         map.put(OCCUR.fieldName, this.occur.typeName);
@@ -129,24 +128,25 @@ public class DisjunctionMaxQueryBuilder implements
 
     public static DisjunctionMaxQueryBuilder dmq(
             final List<DisjunctionMaxClauseBuilder> clauses, final Occur occur, boolean isGenerated) {
-        return new DisjunctionMaxQueryBuilder(clauses, occur, isGenerated);
+        final DisjunctionMaxQueryBuilder dmq = new DisjunctionMaxQueryBuilder(clauses, occur, isGenerated);
+        dmq.setDefaults();
+
+        return dmq;
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final List<DisjunctionMaxClauseBuilder> clauses) {
-        return new DisjunctionMaxQueryBuilder(clauses);
+        return dmq(clauses, null, false);
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final DisjunctionMaxClauseBuilder... clauses) {
-        return new DisjunctionMaxQueryBuilder(Arrays.asList(clauses));
+        return dmq(Arrays.asList(clauses));
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final ComparableCharSequence... terms) {
-        return new DisjunctionMaxQueryBuilder(
-                Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
+        return dmq(Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final String... terms) {
-        return new DisjunctionMaxQueryBuilder(
-                Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
+        return dmq(Arrays.stream(terms).map(TermBuilder::term).collect(Collectors.toList()));
     }
 }

@@ -13,7 +13,23 @@ import static querqy.model.builder.model.Occur.getOccurByTypeName;
 
 public class BuilderUtils {
 
+    // TODO: could be renamed to TypeCastingUtils and the QueryBuilderMap could be put into its own class file
     private BuilderUtils() {}
+
+    public static Optional<Float> castFloatOrDoubleToFloat(final Object obj) {
+        if (obj instanceof Double) {
+            return Optional.of(((Double) obj).floatValue());
+
+        } else if (obj instanceof Float) {
+            return Optional.of((Float) obj);
+
+        } else if (isNull(obj)) {
+            return Optional.empty();
+
+        } else {
+            throw new QueryBuilderException(String.format("Element %s is expected to be of type Float", obj.toString()));
+        }
+    }
 
     public static String expectMapToContainExactlyOneEntryAndGetKey(final Map map) {
         if (map.size() == 1) {
@@ -82,19 +98,5 @@ public class BuilderUtils {
         } else {
             throw new QueryBuilderException(String.format("Element %s is expected to be of type String or Boolean", obj.toString()));
         }
-    }
-
-    public static class QueryBuilderMap extends LinkedHashMap<String, Object> {
-
-        public void putIfNotNull(final String key, final Object value) {
-            if (nonNull(value)) {
-                super.put(key, value);
-            }
-        }
-
-        public void putBooleanAsString(final String key, final boolean value) {
-            super.put(key, String.valueOf(value));
-        }
-
     }
 }

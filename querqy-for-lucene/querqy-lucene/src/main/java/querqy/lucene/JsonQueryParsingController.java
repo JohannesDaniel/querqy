@@ -55,7 +55,7 @@ public class JsonQueryParsingController extends QueryParsingController {
     @Override
     public ExpandedQuery createExpandedQuery() {
 
-        final ExpandedQueryBuilder expanded = expanded(request);
+        final ExpandedQueryBuilder expanded = new ExpandedQueryBuilder(request);
         return expanded.build();
     }
 }

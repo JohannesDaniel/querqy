@@ -1,10 +1,6 @@
 package querqy.solr;
 
 import static org.apache.solr.common.SolrException.ErrorCode.*;
-import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.impl.ExpandedQueryBuilder.expanded;
-import static querqy.model.builder.impl.QueryBuilder.query;
-import static querqy.model.builder.impl.TermBuilder.term;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -24,9 +20,6 @@ import querqy.lucene.LuceneQueries;
 import querqy.lucene.QueryParsingController;
 import querqy.lucene.LuceneSearchEngineRequestAdapter;
 import querqy.lucene.rewrite.cache.TermQueryCache;
-import querqy.model.builder.impl.ExpandedQueryBuilder;
-import querqy.model.builder.impl.QueryBuilder;
-import querqy.model.builder.QueryBuilderException;
 import querqy.parser.QuerqyParser;
 import querqy.rewrite.RewriteChain;
 import querqy.rewrite.SearchEngineRequestAdapter;

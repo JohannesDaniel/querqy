@@ -1,48 +1,10 @@
-- end to end
- -> to json and back (via maps and lists?)
- -> new solr structure
+- setdefaults in build?
 
+- Occur for match all
 
-- expanded query
-- bool to bq
-- stringrawquery + unknown
-- occur
-- matchallquery
+- check all exceptions
 
-
-apple smartphone
-
-
-apple AND smartphone
-
-apple AND (smartphone OR handy)
-
-+apple +smartphone
-
-+apple +(smartphone handy)
-
-
-+apple +smartphone
-
-+(apple iphone) +(smartphone iphone)
-+(apple iphone) +(smartphone handy iphone)
-
-+apple +smart +phone
-+apple +(smart smartphone) +(phone smartphone)
-+(apple iphone) +(smart smartphone iphone) +(phone smartphone iphone)
-
-+antiviren +programm
-+(antivieren (+internet +security)) +(programm (+internet +security))
-
-
-BILDSCHIRM FÜR AUTO =>
-    SYNONYM: TRAGBARER DVD PLAYER
-
-ANTIVIREN PROGRAMM =>
-    SYNONYM: INTERNET SECURITY
-
-KOPFHÖRER FÜR PC =>
-    SYNONYM: GAMING HEADSET
+- expanded tests
 
 
 

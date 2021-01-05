@@ -3,6 +3,8 @@
  */
 package querqy.model;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -16,6 +18,7 @@ import java.util.LinkedList;
  *         TODO: Should return empty lists instead of null
  *
  */
+@EqualsAndHashCode
 public class ExpandedQuery {
 
    private QuerqyQuery<?> userQuery;

@@ -2,9 +2,9 @@ package querqy.model.builder.impl;
 
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxClause;
-import querqy.model.DisjunctionMaxQuery;
+import querqy.model.MatchAllQuery;
 import querqy.model.QuerqyQuery;
-import querqy.model.Query;
+import querqy.model.StringRawQuery;
 import querqy.model.Term;
 import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
@@ -13,7 +13,6 @@ import querqy.model.builder.QueryBuilderException;
 
 import java.util.Map;
 
-import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.TermBuilder.term;
 
 public class BuilderFactory {
@@ -22,8 +21,14 @@ public class BuilderFactory {
 
     public static QuerqyQueryBuilder createQuerqyQueryBuilderFromObject(final QuerqyQuery querqyQuery) {
 
-        if (querqyQuery instanceof Query) {
-            return new BooleanQueryBuilder((Query) querqyQuery);
+        if (querqyQuery instanceof BooleanQuery) {
+            return new BooleanQueryBuilder((BooleanQuery) querqyQuery);
+
+        } else if (querqyQuery instanceof StringRawQuery) {
+            return new StringRawQueryBuilder((StringRawQuery) querqyQuery);
+
+        } else if (querqyQuery instanceof MatchAllQuery) {
+            return new MatchAllQueryBuilder((MatchAllQuery) querqyQuery);
 
         } else {
             throw new QueryBuilderException("The structure of this query is currently not supported by builders");
@@ -34,10 +39,13 @@ public class BuilderFactory {
         final String nameOfQueryType = BuilderUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
 
         if (BooleanQueryBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
-            return bq(map);
+            return new BooleanQueryBuilder(map);
 
-        } else if (false) {
-            return null;
+        } else if (StringRawQueryBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
+            return new StringRawQueryBuilder(map);
+
+        } else if (MatchAllQueryBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
+            return new MatchAllQueryBuilder(map);
 
         } else {
             throw new QueryBuilderException(String.format("Unexpected name of query type: %s", nameOfQueryType));
@@ -62,10 +70,10 @@ public class BuilderFactory {
         final String nameOfQueryType = BuilderUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
 
         if (TermBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
-            return term(map);
+            return new TermBuilder(map);
 
         } else if (BooleanQueryBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
-            return bq(map);
+            return new BooleanQueryBuilder(map);
 
         } else {
             throw new QueryBuilderException(String.format("Unexpected name of query type: %s", nameOfQueryType));

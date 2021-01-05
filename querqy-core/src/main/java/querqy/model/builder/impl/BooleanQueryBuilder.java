@@ -1,6 +1,5 @@
 package querqy.model.builder.impl;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,7 +27,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
 import static querqy.model.builder.model.MapField.CLAUSES;
 import static querqy.model.builder.model.MapField.IS_GENERATED;
 import static querqy.model.builder.model.MapField.OCCUR;
@@ -52,17 +50,14 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     public BooleanQueryBuilder(final BooleanQuery bq) {
         this.setAttributesFromObject(bq);
-        this.setDefaults();
     }
 
     public BooleanQueryBuilder(final Map map) {
         this.setAttributesFromWrappedMap(map);
-        this.setDefaults();
     }
 
     public BooleanQueryBuilder(final List<DisjunctionMaxQueryBuilder> clauses) {
         this.clauses = clauses;
-        this.setDefaults();
     }
 
     @Override
@@ -78,6 +73,8 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     @Override
     public BooleanQuery build(final DisjunctionMaxQuery parent) {
+        setDefaults();
+
         final BooleanQuery bq = new BooleanQuery(parent, this.occur.objectForClause, this.isGenerated);
         clauses.stream().map(dmq -> dmq.build(bq)).forEach(bq::addClause);
         return bq;
@@ -85,12 +82,16 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     @Override
     public DisjunctionMaxClause buildDisjunctionMaxClause(final DisjunctionMaxQuery parent) {
+        setDefaults();
+
         return this.build(parent);
     }
 
     @Override
     public QuerqyQuery<?> buildQuerqyQuery() {
-        final Query query = new Query();
+        setDefaults();
+
+        final Query query = new Query(isGenerated);
         clauses.stream().map(clause -> clause.build(query)).forEach(query::addClause);
         return query;
     }
@@ -123,8 +124,10 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
     }
 
     @Override
-    public Map attributesToMap() {
-        final BuilderUtils.QueryBuilderMap map = new BuilderUtils.QueryBuilderMap();
+    public Map<String, Object> attributesToMap() {
+        setDefaults();
+
+        final QueryBuilderMap map = new QueryBuilderMap();
 
         map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
         map.put(OCCUR.fieldName, this.occur.typeName);
@@ -153,19 +156,22 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
         return this;
     }
 
-    public static BooleanQueryBuilder bq(final Map map) {
-        return new BooleanQueryBuilder(map);
+    public static BooleanQueryBuilder bq(final List<DisjunctionMaxQueryBuilder> dmqs, final Occur occur, boolean isGenerated) {
+        final BooleanQueryBuilder bq = new BooleanQueryBuilder(dmqs, occur, isGenerated);
+        bq.setDefaults();
+
+        return bq;
     }
 
     public static BooleanQueryBuilder bq(final List<DisjunctionMaxQueryBuilder> dmqs) {
-        return new BooleanQueryBuilder(dmqs);
+        return bq(dmqs, null, false);
     }
 
     public static BooleanQueryBuilder bq(final DisjunctionMaxQueryBuilder... dmqs) {
-        return new BooleanQueryBuilder(Arrays.stream(dmqs).collect(Collectors.toList()));
+        return bq(Arrays.stream(dmqs).collect(Collectors.toList()));
     }
 
     public static BooleanQueryBuilder bq(final String... dmqs) {
-        return new BooleanQueryBuilder(Arrays.stream(dmqs).map(DisjunctionMaxQueryBuilder::dmq).collect(Collectors.toList()));
+        return bq(Arrays.stream(dmqs).map(DisjunctionMaxQueryBuilder::dmq).collect(Collectors.toList()));
     }
 }

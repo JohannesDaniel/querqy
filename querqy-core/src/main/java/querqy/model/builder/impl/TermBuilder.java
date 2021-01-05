@@ -12,12 +12,13 @@ import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
 import querqy.model.builder.BuilderUtils;
-import querqy.model.builder.BuilderUtils.QueryBuilderMap;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.QueryBuilderException;
 
 import java.util.Map;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
 import static querqy.model.builder.model.MapField.FIELD;
 import static querqy.model.builder.model.MapField.IS_GENERATED;
 import static querqy.model.builder.model.MapField.VALUE;
@@ -48,7 +49,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
         this.value = value;
     }
 
-    // @Override
+    @Override
     public void setDefaults() {
         // No defaults are needed to be set here; isGenerated is automatically set to false, field is allowed to be
         // null and value does not have a default
@@ -56,7 +57,10 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public Term build(final DisjunctionMaxQuery parent) {
-        Objects.requireNonNull(this.value, "The value of a term must not be null");
+        if (isNull(this.value)) {
+            throw new QueryBuilderException("The value of a term must not be null");
+        }
+
         return new Term(parent, field, value, isGenerated);
     }
 
@@ -67,7 +71,9 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public Map<String, Object> attributesToMap() {
-        Objects.requireNonNull(this.value, "The value of a term must not be null");
+        if (isNull(this.value)) {
+            throw new QueryBuilderException("The value of a term must not be null");
+        }
 
         final QueryBuilderMap map = new QueryBuilderMap();
         map.put(VALUE.fieldName, this.value);
