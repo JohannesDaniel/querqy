@@ -1,5 +1,7 @@
 package querqy.model.builder.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import querqy.model.BooleanQuery;
 import querqy.model.Clause;
@@ -11,7 +13,6 @@ import querqy.model.builder.model.Occur;
 import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.impl.MatchAllQueryBuilder.matchall;
 import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
 import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
 import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
@@ -19,8 +20,21 @@ import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 public class BooleanQueryBuilderTest extends AbstractBuilderTest {
 
     @Test
-    public void test() {
-        matchall().checkAndSetDefaults();
+    public void test() throws JsonProcessingException {
+        System.out.println(map(
+                entry(BooleanQueryBuilder.NAME_OF_QUERY_TYPE,
+                        map(
+                                entry(CLAUSES.fieldName,
+                                        list(
+                                                dmq("a").toMap(),
+                                                dmq("b").toMap())),
+                                entry(OCCUR.fieldName, Occur.MUST.typeName),
+                                entry(IS_GENERATED.fieldName, "true")))));
+        System.out.println();
+        String json = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(
+                bq(list(dmq("a"), dmq("b")), Occur.MUST, true)
+                        .toMap());
+        System.out.println(json);
     }
 
     @Test
@@ -44,15 +58,17 @@ public class BooleanQueryBuilderTest extends AbstractBuilderTest {
     public void testBuilderToMap() {
         BooleanQueryBuilder bqBuilder = bq(list(dmq("a"), dmq("b")), Occur.MUST, true);
 
-        assertThat(bqBuilder.attributesToMap())
+        assertThat(bqBuilder.toMap())
                 .isEqualTo(
                         map(
-                                entry(CLAUSES.fieldName,
-                                        list(
-                                                dmq("a").toMap(),
-                                                dmq("b").toMap())),
-                                entry(OCCUR.fieldName, Occur.MUST.typeName),
-                                entry(IS_GENERATED.fieldName, "true")));
+                                entry(BooleanQueryBuilder.NAME_OF_QUERY_TYPE,
+                                        map(
+                                                entry(CLAUSES.fieldName,
+                                                        list(
+                                                                dmq("a").toMap(),
+                                                                dmq("b").toMap())),
+                                                entry(OCCUR.fieldName, Occur.MUST.typeName),
+                                                entry(IS_GENERATED.fieldName, "true")))));
     }
 
     @Test

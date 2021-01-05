@@ -10,6 +10,7 @@ import querqy.model.BoostQuery;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.BuilderField;
 
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,10 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
 
     public static final String NAME_OF_QUERY_TYPE = "boost_query";
 
+    @BuilderField(fieldProperties = QUERY)
     private QuerqyQueryBuilder querqyQueryBuilder;
+
+    @BuilderField(fieldProperties = BOOST)
     private float boost;
 
     public BoostQueryBuilder(final BoostQuery boostQuery) {
@@ -45,24 +49,24 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
         this.querqyQueryBuilder = querqyQueryBuilder;
     }
 
-
     @Override
-    public void setDefaults() {
-        // Not needed, there is no default for querqyQueryBuilder and boost is per default 0.0f
+    public BoostQueryBuilder getBuilder() {
+        return this;
     }
 
     @Override
-    public BoostQuery build() {
-        if (isNull(this.querqyQueryBuilder)) {
-            throw new QueryBuilderException("The query of a boost query must not be null");
-        }
+    public Class<BoostQueryBuilder> getBuilderClass() {
+        return BoostQueryBuilder.class;
+    }
 
+    @Override
+    public String getNameOfQueryType() {
+        return NAME_OF_QUERY_TYPE;
+    }
+
+    @Override
+    public BoostQuery buildObject(Object parent) {
         return new BoostQuery(querqyQueryBuilder.buildQuerqyQuery(), this.boost);
-    }
-
-    @Override
-    public BoostQuery build(final Object parent) {
-        throw new QueryBuilderException("Not allowed to set parent node for this Builder");
     }
 
     @Override
@@ -71,11 +75,6 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
         this.setBoost(boostQuery.getBoost());
 
         return this;
-    }
-
-    @Override
-    public String getNameOfQueryType() {
-        return NAME_OF_QUERY_TYPE;
     }
 
     @Override

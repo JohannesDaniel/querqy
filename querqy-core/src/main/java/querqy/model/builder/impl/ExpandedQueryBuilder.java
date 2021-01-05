@@ -13,6 +13,7 @@ import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.BuilderField;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static querqy.model.builder.model.BuilderFieldProperties.BOOST_DOWN_QUERIES;
 import static querqy.model.builder.model.BuilderFieldProperties.BOOST_UP_QUERIES;
@@ -40,9 +40,16 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
 
     public static final String NAME_OF_QUERY_TYPE = "expanded_query";
 
+    @BuilderField(fieldProperties = USER_QUERY)
     private QuerqyQueryBuilder userQuery;
+
+    @BuilderField(fieldProperties = FILTER_QUERIES)
     private List<QuerqyQueryBuilder> filterQueries;
+
+    @BuilderField(fieldProperties = BOOST_UP_QUERIES)
     private List<BoostQueryBuilder> boostUpQueries;
+
+    @BuilderField(fieldProperties = BOOST_DOWN_QUERIES)
     private List<BoostQueryBuilder> boostDownQueries;
 
     public ExpandedQueryBuilder(final ExpandedQuery expanded) {
@@ -57,30 +64,23 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
         this.userQuery = userQuery;
     }
 
-
     @Override
-    public void setDefaults() {
-        if (isNull(this.filterQueries)) {
-            this.setFilterQueries(Collections.emptyList());
-        }
-
-        if (isNull(this.boostUpQueries)) {
-            this.setBoostUpQueries(Collections.emptyList());
-        }
-
-        if (isNull(this.boostDownQueries)) {
-            this.setBoostDownQueries(Collections.emptyList());
-        }
+    public ExpandedQueryBuilder getBuilder() {
+        return this;
     }
 
     @Override
-    public ExpandedQuery build() {
-        setDefaults();
+    public Class<ExpandedQueryBuilder> getBuilderClass() {
+        return ExpandedQueryBuilder.class;
+    }
 
-        if (isNull(this.userQuery)) {
-            throw new QueryBuilderException("UserQuery must not be null");
-        }
+    @Override
+    public String getNameOfQueryType() {
+        return NAME_OF_QUERY_TYPE;
+    }
 
+    @Override
+    public ExpandedQuery buildObject(Object parent) {
         final ExpandedQuery expandedQuery = new ExpandedQuery(userQuery.buildQuerqyQuery());
 
         for (final QuerqyQueryBuilder filterQuery : filterQueries) {
@@ -96,11 +96,7 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
         }
 
         return expandedQuery;
-    }
 
-    @Override
-    public ExpandedQuery build(Object parent) {
-        throw new QueryBuilderException("Not allowed to set parent node for this Builder");
     }
 
     @Override
@@ -131,18 +127,7 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
     }
 
     @Override
-    public String getNameOfQueryType() {
-        return NAME_OF_QUERY_TYPE;
-    }
-
-    @Override
     public Map<String, Object> attributesToMap() {
-        setDefaults();
-
-        if (isNull(this.userQuery)) {
-            throw new QueryBuilderException("UserQuery must not be null");
-        }
-
         final QueryBuilderMap map = new QueryBuilderMap();
 
         map.put(USER_QUERY.fieldName, this.userQuery.toMap());
@@ -164,35 +149,11 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
             throw new QueryBuilderException(String.format("Creating %s requires an entry %s", NAME_OF_QUERY_TYPE, USER_QUERY.fieldName));
         }
 
-        final List<QuerqyQueryBuilder> parsedFilterQueries = new ArrayList<>();
-        final Optional<List> optionalFilterQueries = BuilderUtils.castList(map.get(FILTER_QUERIES.fieldName));
-        if (optionalFilterQueries.isPresent()) {
-            for (final Object rawFilterQuery : optionalFilterQueries.get()) {
-                BuilderUtils.castMap(rawFilterQuery).ifPresent(filterQuery ->
-                        parsedFilterQueries.add(BuilderFactory.createQuerqyQueryBuilderFromMap(filterQuery)));
-            }
-        }
-        setFilterQueries(Collections.unmodifiableList(parsedFilterQueries));
+        this.setFilterQueries(BuilderUtils.castAndParseListOfMaps(map.get(FILTER_QUERIES.fieldName),
+                BuilderFactory::createQuerqyQueryBuilderFromMap));
 
-        final List<BoostQueryBuilder> parsedBoostUpQueries = new ArrayList<>();
-        final Optional<List> optionalBoostUpQueries = BuilderUtils.castList(map.get(BOOST_UP_QUERIES.fieldName));
-        if (optionalBoostUpQueries.isPresent()) {
-            for (final Object rawBoostUpQuery : optionalBoostUpQueries.get()) {
-                BuilderUtils.castMap(rawBoostUpQuery).ifPresent(boostUpQuery ->
-                        parsedBoostUpQueries.add(new BoostQueryBuilder(boostUpQuery)));
-            }
-        }
-        setBoostUpQueries(Collections.unmodifiableList(parsedBoostUpQueries));
-
-        final List<BoostQueryBuilder> parsedBoostDownQueries = new ArrayList<>();
-        final Optional<List> optionalBoostDownQueries = BuilderUtils.castList(map.get(BOOST_DOWN_QUERIES.fieldName));
-        if (optionalBoostDownQueries.isPresent()) {
-            for (final Object rawBoostDownQuery : optionalBoostDownQueries.get()) {
-                BuilderUtils.castMap(rawBoostDownQuery).ifPresent(boostDownQuery ->
-                        parsedBoostDownQueries.add(new BoostQueryBuilder(boostDownQuery)));
-            }
-        }
-        setBoostDownQueries(Collections.unmodifiableList(parsedBoostDownQueries));
+        this.setBoostUpQueries(BuilderUtils.castAndParseListOfMaps(map.get(BOOST_UP_QUERIES.fieldName), BoostQueryBuilder::new));
+        this.setBoostDownQueries(BuilderUtils.castAndParseListOfMaps(map.get(BOOST_DOWN_QUERIES.fieldName), BoostQueryBuilder::new));
 
         return this;
     }

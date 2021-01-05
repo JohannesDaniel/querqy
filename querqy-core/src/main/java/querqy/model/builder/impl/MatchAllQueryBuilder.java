@@ -10,19 +10,13 @@ import lombok.experimental.Accessors;
 import querqy.model.Clause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.MatchAllQuery;
-import querqy.model.QuerqyQuery;
 import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
-import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.model.BuilderField;
-import querqy.model.builder.model.BuilderFieldProperties;
 import querqy.model.builder.model.Occur;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
 import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
@@ -63,41 +57,8 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
     }
 
     @Override
-    public MatchAllQuery build(final DisjunctionMaxQuery parent) {
-        setDefaults();
+    public MatchAllQuery buildObject(DisjunctionMaxQuery parent) {
         return new MatchAllQuery(parent, Clause.Occur.SHOULD, isGenerated);
-    }
-
-    @Override
-    public void setDefaults() {
-//        final Field[] fields = MatchAllQueryBuilder.class.getDeclaredFields();
-//
-//        for (final Field field : fields) {
-//            final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
-//
-//            if (nonNull(fieldAnnotation)) {
-//                final BuilderFieldProperties properties = fieldAnnotation.fieldProperties();
-//
-//                try {
-//                    final Object fieldValue = field.get(this);
-//                    if (isNull(fieldValue)) {
-//                        final Object defaulValue = properties.defaultValue;
-//
-//                        if (isNull(defaulValue) && fieldAnnotation.fieldIsMandatory()) {
-//                            throw new QueryBuilderException(
-//                                    String.format("Field %s is mandatory for builder %s",
-//                                            field.getName(), getNameOfQueryType()));
-//                        }
-//
-//                        field.set(this, defaulValue);
-//                    }
-//
-//                } catch (IllegalAccessException e) {
-//                    throw new QueryBuilderException(
-//                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -114,8 +75,6 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     @Override
     public Map<String, Object> attributesToMap() {
-        setDefaults();
-
         final QueryBuilderMap map = new QueryBuilderMap();
 
         map.put(OCCUR.fieldName, this.occur.typeName);
@@ -126,7 +85,7 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     @Override
     public MatchAllQueryBuilder setAttributesFromMap(Map map) {
-        BuilderUtils.castOccur(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        BuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
         BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
         return this;
     }

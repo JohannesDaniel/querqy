@@ -13,6 +13,7 @@ import querqy.model.Term;
 import querqy.model.builder.BuilderUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QueryBuilderException;
+import querqy.model.builder.model.BuilderField;
 
 import java.util.Map;
 
@@ -31,8 +32,13 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     public static final String NAME_OF_QUERY_TYPE = "term";
 
+    @BuilderField(fieldProperties = VALUE)
     private String value;
+
+    @BuilderField(fieldProperties = FIELD, fieldIsMandatory = false)
     private String field;
+
+    @BuilderField(fieldProperties = IS_GENERATED)
     private boolean isGenerated;
 
     public TermBuilder(final Term term) {
@@ -48,17 +54,22 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
-    public void setDefaults() {
-        // No defaults are needed to be set here; isGenerated is automatically set to false, field is allowed to be
-        // null and value does not have a default
+    public TermBuilder getBuilder() {
+        return this;
     }
 
     @Override
-    public Term build(final DisjunctionMaxQuery parent) {
-        if (isNull(this.value)) {
-            throw new QueryBuilderException("The value of a term must not be null");
-        }
+    public Class<TermBuilder> getBuilderClass() {
+        return TermBuilder.class;
+    }
 
+    @Override
+    public String getNameOfQueryType() {
+        return NAME_OF_QUERY_TYPE;
+    }
+
+    @Override
+    public Term buildObject(DisjunctionMaxQuery parent) {
         return new Term(parent, field, value, isGenerated);
     }
 
@@ -69,10 +80,6 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public Map<String, Object> attributesToMap() {
-        if (isNull(this.value)) {
-            throw new QueryBuilderException("The value of a term must not be null");
-        }
-
         final QueryBuilderMap map = new QueryBuilderMap();
         map.put(VALUE.fieldName, this.value);
         map.putIfNotNull(FIELD.fieldName, this.field);
@@ -97,11 +104,6 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
         this.setGenerated(term.isGenerated());
 
         return this;
-    }
-
-    @Override
-    public String getNameOfQueryType() {
-        return NAME_OF_QUERY_TYPE;
     }
 
     public static TermBuilder term(final String value, final String field, final boolean isGenerated) {

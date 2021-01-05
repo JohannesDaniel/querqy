@@ -1,6 +1,4 @@
 Set Defaults:
-- default methon in interface
-- remove the check in all classes
 - add tests
 
 - setdefaults in build?
@@ -8,11 +6,8 @@ Set Defaults:
 
 
 
-- Occur for match all
-
 - check all exceptions
 
-- expanded tests
 
 
 

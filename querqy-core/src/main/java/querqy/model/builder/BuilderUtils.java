@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -60,7 +61,7 @@ public class BuilderUtils {
         throw new QueryBuilderException(String.format("Map is expected to contain exactly one element: %s", map.toString()));
     }
 
-    public static Optional<Occur> castOccur(final Object obj) {
+    public static Optional<Occur> castOccurByTypeName(final Object obj) {
         final Optional<String> optionalOccurName = castString(obj);
 
         if (optionalOccurName.isPresent()) {
@@ -103,6 +104,30 @@ public class BuilderUtils {
 
         } else {
             throw new QueryBuilderException(String.format("Element %s is expected to be of type String", obj.toString()));
+        }
+    }
+
+    // TODO: Not a casting method anymore; could be put into an own class?
+    public static List<QueryNodeBuilder> castListOfQueryNodeBuilders(final Object obj) {
+        final Optional<List> optionalList = castList(obj);
+        if (optionalList.isPresent()) {
+            final List<QueryNodeBuilder> queryNodeBuilders = new ArrayList<>();
+
+            for (final Object rawNode : optionalList.get()) {
+                queryNodeBuilders.add(castQueryNodeBuilder(rawNode));
+            }
+
+            return queryNodeBuilders;
+        } else {
+            throw new QueryBuilderException("Unexpected error happened parsing list of QueryNodeBuilder");
+        }
+    }
+
+    public static QueryNodeBuilder castQueryNodeBuilder(final Object obj) {
+        if (obj instanceof QueryNodeBuilder) {
+            return (QueryNodeBuilder) obj;
+        } else {
+            throw new QueryBuilderException(String.format("Object %s was expected to be of type QueryNodeBuilder", obj.toString()));
         }
     }
 
