@@ -32,11 +32,17 @@ public class BoostQueryBuilderTest extends AbstractBuilderTest {
     public void testBuilderToMap() {
         BoostQueryBuilder boostBuilder = boost(bq("a"), 1.0f);
 
-        assertThat(boostBuilder.attributesToMap())
+        assertThat(boostBuilder.toMap())
                 .isEqualTo(
                         map(
-                                entry(QUERY.fieldName, bq("a").toMap()),
-                                entry(BOOST.fieldName, 1.0f)));
+                                entry(
+                                        BoostQueryBuilder.NAME_OF_QUERY_TYPE,
+                                        map(
+                                                entry(QUERY.fieldName, bq("a").toMap()),
+                                                entry(BOOST.fieldName, 1.0f))
+                                )
+                        )
+                );
     }
 
     @Test

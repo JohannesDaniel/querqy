@@ -10,10 +10,11 @@ import lombok.experimental.Accessors;
 import querqy.model.Clause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.MatchAllQuery;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
+import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
@@ -85,8 +86,8 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     @Override
     public MatchAllQueryBuilder setAttributesFromMap(Map map) {
-        BuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
+        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
         return this;
     }
 

@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.StringRawQuery;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
+import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
@@ -98,9 +99,9 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
 
     @Override
     public StringRawQueryBuilder setAttributesFromMap(Map map) {
-        BuilderUtils.castString(map.get(QUERY.fieldName)).ifPresent(this::setRawQuery);
-        BuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingBuilderUtils.castString(map.get(QUERY.fieldName)).ifPresent(this::setRawQuery);
+        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 
         return this;
     }

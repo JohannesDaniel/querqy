@@ -15,9 +15,8 @@ import querqy.model.builder.model.BuilderField;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
-import static querqy.model.builder.BuilderUtils.castFloatOrDoubleToFloat;
-import static querqy.model.builder.BuilderUtils.castMap;
+import static querqy.model.builder.TypeCastingBuilderUtils.castFloatOrDoubleToFloat;
+import static querqy.model.builder.TypeCastingBuilderUtils.castMap;
 import static querqy.model.builder.model.BuilderFieldProperties.BOOST;
 import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
 
@@ -79,16 +78,17 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
 
     @Override
     public Map<String, Object> attributesToMap() {
-        if (isNull(this.querqyQueryBuilder)) {
-            throw new QueryBuilderException("The query of a boost query must not be null");
-        }
-
-        final QueryBuilderMap map = new QueryBuilderMap();
-
-        map.put(QUERY.fieldName, this.querqyQueryBuilder.toMap());
-        map.put(BOOST.fieldName, this.boost);
-
-        return map;
+//        if (isNull(this.querqyQueryBuilder)) {
+//            throw new QueryBuilderException("The query of a boost query must not be null");
+//        }
+//
+//        final QueryBuilderMap map = new QueryBuilderMap();
+//
+//        map.put(QUERY.fieldName, this.querqyQueryBuilder.toMap());
+//        map.put(BOOST.fieldName, this.boost);
+//
+//        return map;
+        return null;
     }
 
     @Override

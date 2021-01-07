@@ -9,11 +9,12 @@ import lombok.experimental.Accessors;
 import querqy.ComparableCharSequence;
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxQuery;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
+import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,10 +107,10 @@ public class DisjunctionMaxQueryBuilder implements
 
     @Override
     public DisjunctionMaxQueryBuilder setAttributesFromMap(final Map map) {
-        this.setClauses(BuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName),
+        this.setClauses(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName),
                 BuilderFactory::createDisjunctionMaxClauseBuilderFromMap));
-        BuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 
         return this;
     }

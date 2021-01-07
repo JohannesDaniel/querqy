@@ -1,27 +1,37 @@
 package querqy.model.builder;
 
-import querqy.model.builder.impl.DisjunctionMaxQueryBuilder;
+import querqy.model.builder.impl.ExpandedQueryBuilder;
 import querqy.model.builder.model.Occur;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
 import static querqy.model.builder.model.Occur.getOccurByTypeName;
 
-public class BuilderUtils {
+public class TypeCastingBuilderUtils {
 
-    // TODO: could be renamed to TypeCastingUtils and the QueryBuilderMap could be put into its own class file
-    private BuilderUtils() {}
+    private TypeCastingBuilderUtils() {}
+
+
+    public static void createCastFunctionForClassType(Class<?> classType) {
+        if (classType.isInterface()) {
+
+        } else {
+
+        }
+    }
+
+    public static void createCastFunctionForInterface(final Class<?> interfaceType) {
+        if (interfaceType.isAssignableFrom(QueryNodeBuilder.class)) {
+            System.out.println("true");
+
+        }
+    }
 
 
     public static <T> List<T> castAndParseListOfMaps(final Object rawList, final Function<Map, T> objectMapper) {
@@ -30,7 +40,7 @@ public class BuilderUtils {
         final List listOfMaps = castList(rawList).orElse(Collections.emptyList());
 
         for (final Object rawMap : listOfMaps) {
-            final Optional<Map> optionalMap = BuilderUtils.castMap(rawMap);
+            final Optional<Map> optionalMap = TypeCastingBuilderUtils.castMap(rawMap);
 
             optionalMap.ifPresent(map -> parsedMaps.add(objectMapper.apply(map)));
         }

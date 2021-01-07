@@ -10,14 +10,13 @@ import querqy.ComparableCharSequence;
 import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
-import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.model.BuilderField;
+import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
-import static java.util.Objects.isNull;
 import static querqy.model.builder.model.BuilderFieldProperties.FIELD;
 import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
 import static querqy.model.builder.model.BuilderFieldProperties.VALUE;
@@ -90,9 +89,9 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public TermBuilder setAttributesFromMap(final Map map) {
-        BuilderUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
-        BuilderUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
-        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingBuilderUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
+        TypeCastingBuilderUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
+        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 
         return this;
     }

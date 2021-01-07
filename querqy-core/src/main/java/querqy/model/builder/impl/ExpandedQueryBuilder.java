@@ -9,13 +9,13 @@ import lombok.experimental.Accessors;
 import querqy.model.BoostQuery;
 import querqy.model.ExpandedQuery;
 import querqy.model.QuerqyQuery;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.BuilderField;
+import querqy.model.builder.model.QueryBuilderMap;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -141,7 +141,7 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
     @Override
     public ExpandedQueryBuilder setAttributesFromMap(final Map map) {
 
-        final Optional<Map> optionalUserQuery = BuilderUtils.castMap(map.get(USER_QUERY.fieldName));
+        final Optional<Map> optionalUserQuery = TypeCastingBuilderUtils.castMap(map.get(USER_QUERY.fieldName));
         if (optionalUserQuery.isPresent()) {
             setUserQuery(BuilderFactory.createQuerqyQueryBuilderFromMap(optionalUserQuery.get()));
 
@@ -149,11 +149,11 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
             throw new QueryBuilderException(String.format("Creating %s requires an entry %s", NAME_OF_QUERY_TYPE, USER_QUERY.fieldName));
         }
 
-        this.setFilterQueries(BuilderUtils.castAndParseListOfMaps(map.get(FILTER_QUERIES.fieldName),
+        this.setFilterQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(FILTER_QUERIES.fieldName),
                 BuilderFactory::createQuerqyQueryBuilderFromMap));
 
-        this.setBoostUpQueries(BuilderUtils.castAndParseListOfMaps(map.get(BOOST_UP_QUERIES.fieldName), BoostQueryBuilder::new));
-        this.setBoostDownQueries(BuilderUtils.castAndParseListOfMaps(map.get(BOOST_DOWN_QUERIES.fieldName), BoostQueryBuilder::new));
+        this.setBoostUpQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(BOOST_UP_QUERIES.fieldName), BoostQueryBuilder::new));
+        this.setBoostDownQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(BOOST_DOWN_QUERIES.fieldName), BoostQueryBuilder::new));
 
         return this;
     }

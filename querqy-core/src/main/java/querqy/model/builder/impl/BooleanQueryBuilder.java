@@ -10,11 +10,10 @@ import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.Query;
-import querqy.model.builder.BuilderUtils;
+import querqy.model.builder.TypeCastingBuilderUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
-import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
 
@@ -32,7 +31,7 @@ import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString
 public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQueryBuilder, BooleanQuery>,
         QuerqyQueryBuilder<BooleanQueryBuilder, BooleanQuery, DisjunctionMaxQuery> {
@@ -115,21 +114,22 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     @Override
     public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-
-        map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
-        map.put(OCCUR.fieldName, this.occur.typeName);
-        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
-
-        return map;
+//        final QueryBuilderMap map = new QueryBuilderMap();
+//
+//        map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
+//        map.put(OCCUR.fieldName, this.occur.typeName);
+//        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
+//
+//        return map;
+        return null;
     }
 
     @Override
     public BooleanQueryBuilder setAttributesFromMap(final Map map) {
-        this.setClauses(BuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName), DisjunctionMaxQueryBuilder::new));
+        this.setClauses(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName), DisjunctionMaxQueryBuilder::new));
 
-        BuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        BuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
 
         return this;
     }

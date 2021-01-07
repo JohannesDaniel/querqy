@@ -1,4 +1,4 @@
-package querqy.model.builder.impl;
+package querqy.model.builder.model;
 
 import java.util.LinkedHashMap;
 

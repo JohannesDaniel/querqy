@@ -41,13 +41,15 @@ public class ExpandedQueryBuilderTest extends AbstractBuilderTest {
         ExpandedQueryBuilder expandedBuilder = new ExpandedQueryBuilder(
                 bq("a"), list(bq("b")), list(boost(bq("c"), 1.0f)), list(boost(bq("d"), 1.0f)));
 
-        assertThat(expandedBuilder.attributesToMap())
+        assertThat(expandedBuilder.toMap())
                 .isEqualTo(
                         map(
-                                entry(USER_QUERY.fieldName, bq("a").toMap()),
-                                entry(FILTER_QUERIES.fieldName, list(bq("b").toMap())),
-                                entry(BOOST_UP_QUERIES.fieldName, list(boost(bq("c"), 1.0f).toMap())),
-                                entry(BOOST_DOWN_QUERIES.fieldName, list(boost(bq("d"), 1.0f).toMap())))
+                                entry(ExpandedQueryBuilder.NAME_OF_QUERY_TYPE,
+                                        map(
+                                                entry(USER_QUERY.fieldName, bq("a").toMap()),
+                                                entry(FILTER_QUERIES.fieldName, list(bq("b").toMap())),
+                                                entry(BOOST_UP_QUERIES.fieldName, list(boost(bq("c"), 1.0f).toMap())),
+                                                entry(BOOST_DOWN_QUERIES.fieldName, list(boost(bq("d"), 1.0f).toMap())))))
                 );
     }
 
