@@ -46,7 +46,7 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
     }
 
     public StringRawQueryBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     public StringRawQueryBuilder(final String rawQuery) {
@@ -85,16 +85,6 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
         this.setGenerated(stringRawQuery.isGenerated());
 
         return this;
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-        map.put(QUERY.fieldName, this.rawQuery);
-        map.put(OCCUR.fieldName, this.occur.typeName);
-        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
-
-        return map;
     }
 
     @Override

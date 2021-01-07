@@ -41,7 +41,7 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
     }
 
     public BoostQueryBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     public BoostQueryBuilder(final QuerqyQueryBuilder querqyQueryBuilder) {
@@ -74,21 +74,6 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
         this.setBoost(boostQuery.getBoost());
 
         return this;
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-//        if (isNull(this.querqyQueryBuilder)) {
-//            throw new QueryBuilderException("The query of a boost query must not be null");
-//        }
-//
-//        final QueryBuilderMap map = new QueryBuilderMap();
-//
-//        map.put(QUERY.fieldName, this.querqyQueryBuilder.toMap());
-//        map.put(BOOST.fieldName, this.boost);
-//
-//        return map;
-        return null;
     }
 
     @Override

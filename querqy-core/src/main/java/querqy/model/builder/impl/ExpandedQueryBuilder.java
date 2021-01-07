@@ -57,7 +57,7 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
     }
 
     public ExpandedQueryBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     public ExpandedQueryBuilder(final QuerqyQueryBuilder userQuery) {
@@ -124,18 +124,6 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
         }
 
         return this;
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-
-        map.put(USER_QUERY.fieldName, this.userQuery.toMap());
-        map.put(FILTER_QUERIES.fieldName, filterQueries.stream().map(QuerqyQueryBuilder::toMap).collect(Collectors.toList()));
-        map.put(BOOST_UP_QUERIES.fieldName, boostUpQueries.stream().map(BoostQueryBuilder::toMap).collect(Collectors.toList()));
-        map.put(BOOST_DOWN_QUERIES.fieldName, boostDownQueries.stream().map(BoostQueryBuilder::toMap).collect(Collectors.toList()));
-
-        return map;
     }
 
     @Override

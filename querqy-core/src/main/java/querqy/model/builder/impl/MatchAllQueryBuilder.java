@@ -44,7 +44,7 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
     }
 
     public MatchAllQueryBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     @Override
@@ -72,16 +72,6 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
     @Override
     public String getNameOfQueryType() {
         return NAME_OF_QUERY_TYPE;
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-
-        map.put(OCCUR.fieldName, this.occur.typeName);
-        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
-
-        return map;
     }
 
     @Override

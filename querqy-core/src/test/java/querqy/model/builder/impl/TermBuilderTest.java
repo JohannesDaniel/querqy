@@ -17,7 +17,7 @@ public class TermBuilderTest extends AbstractBuilderTest {
 
         assertThat(new TermBuilder(
                 map(
-                        entry("term", map(
+                        entry(TermBuilder.NAME_OF_QUERY_TYPE, map(
                                 entry(VALUE.fieldName, "value"),
                                 entry(FIELD.fieldName, "field"),
                                 entry(IS_GENERATED.fieldName, true)))
@@ -28,12 +28,16 @@ public class TermBuilderTest extends AbstractBuilderTest {
 
     @Test
     public void testBuilderToMap() {
-        assertThat(term("value", "field", true).attributesToMap())
+        assertThat(term("value", "field", true).toMap())
                 .isEqualTo(
                         map(
-                                entry(VALUE.fieldName, "value"),
-                                entry(FIELD.fieldName, "field"),
-                                entry(IS_GENERATED.fieldName, "true")));
+                                entry(TermBuilder.NAME_OF_QUERY_TYPE,
+                                        map(
+                                                entry(VALUE.fieldName, "value"),
+                                                entry(FIELD.fieldName, "field"),
+                                                entry(IS_GENERATED.fieldName, "true")))
+                        )
+                );
     }
 
     @Test

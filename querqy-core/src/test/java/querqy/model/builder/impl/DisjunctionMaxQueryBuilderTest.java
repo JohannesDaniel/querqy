@@ -36,16 +36,20 @@ public class DisjunctionMaxQueryBuilderTest extends AbstractBuilderTest {
     public void testBuilderToMap() {
         DisjunctionMaxQueryBuilder dmqBuilder = dmq(list(term("a"), term("b")), Occur.MUST, true);
 
-        assertThat(dmqBuilder.attributesToMap())
+        assertThat(dmqBuilder.toMap())
                 .isEqualTo(
                         map(
-                                entry(CLAUSES.fieldName,
-                                        list(
-                                                term("a").toMap(),
-                                                term("b").toMap())
-                                        ),
-                                entry(OCCUR.fieldName, Occur.MUST.typeName),
-                                entry(IS_GENERATED.fieldName, "true")));
+                                entry(DisjunctionMaxQueryBuilder.NAME_OF_QUERY_TYPE,
+                                        map(
+                                                entry(CLAUSES.fieldName,
+                                                        list(
+                                                                term("a").toMap(),
+                                                                term("b").toMap())
+                                                ),
+                                                entry(OCCUR.fieldName, Occur.MUST.typeName),
+                                                entry(IS_GENERATED.fieldName, "true")))
+                        )
+                );
     }
 
     @Test

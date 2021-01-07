@@ -51,7 +51,7 @@ public class DisjunctionMaxQueryBuilder implements
     }
 
     public DisjunctionMaxQueryBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     public DisjunctionMaxQueryBuilder(final List<DisjunctionMaxClauseBuilder> clauses) {
@@ -92,17 +92,6 @@ public class DisjunctionMaxQueryBuilder implements
         this.setGenerated(dmq.isGenerated());
 
         return this;
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-
-        map.put(CLAUSES.fieldName, clauses.stream().map(QueryNodeBuilder::toMap).collect(Collectors.toList()));
-        map.put(OCCUR.fieldName, this.occur.typeName);
-        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
-
-        return map;
     }
 
     @Override

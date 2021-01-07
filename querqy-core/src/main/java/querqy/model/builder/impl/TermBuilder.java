@@ -45,7 +45,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     public TermBuilder(final Map map) {
-        this.setAttributesFromWrappedMap(map);
+        this.fromMap(map);
     }
 
     public TermBuilder(final String value) {
@@ -75,16 +75,6 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     @Override
     public DisjunctionMaxClause buildDisjunctionMaxClause(DisjunctionMaxQuery parent) {
         return build(parent);
-    }
-
-    @Override
-    public Map<String, Object> attributesToMap() {
-        final QueryBuilderMap map = new QueryBuilderMap();
-        map.put(VALUE.fieldName, this.value);
-        map.putIfNotNull(FIELD.fieldName, this.field);
-        map.putBooleanAsString(IS_GENERATED.fieldName, this.isGenerated);
-
-        return map;
     }
 
     @Override
