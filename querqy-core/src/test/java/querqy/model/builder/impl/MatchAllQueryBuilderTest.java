@@ -7,9 +7,9 @@ import querqy.model.builder.AbstractBuilderTest;
 import querqy.model.builder.model.Occur;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static querqy.model.builder.impl.MatchAllQueryBuilder.FIELD_NAME_IS_GENERATED;
+import static querqy.model.builder.impl.MatchAllQueryBuilder.FIELD_NAME_OCCUR;
 import static querqy.model.builder.impl.MatchAllQueryBuilder.matchall;
-import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
 
 public class MatchAllQueryBuilderTest extends AbstractBuilderTest {
 
@@ -19,8 +19,8 @@ public class MatchAllQueryBuilderTest extends AbstractBuilderTest {
                 map(
                         entry(MatchAllQueryBuilder.NAME_OF_QUERY_TYPE,
                                 map(
-                                        entry(OCCUR.fieldName, "must"),
-                                        entry(IS_GENERATED.fieldName, true)
+                                        entry(FIELD_NAME_OCCUR, "must"),
+                                        entry(FIELD_NAME_IS_GENERATED, true)
                                 )
                         )
                 )
@@ -36,8 +36,8 @@ public class MatchAllQueryBuilderTest extends AbstractBuilderTest {
                         map(
                                 entry(MatchAllQueryBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(OCCUR.fieldName, "must"),
-                                                entry(IS_GENERATED.fieldName, true)
+                                                entry(FIELD_NAME_OCCUR, "must"),
+                                                entry(FIELD_NAME_IS_GENERATED, true)
                                         )
                                 )
                         )

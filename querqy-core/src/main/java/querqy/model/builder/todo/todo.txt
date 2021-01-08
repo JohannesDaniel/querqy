@@ -1,13 +1,4 @@
-Defaults:
-- test defaults for all builders
 
-
-
-Misc:
-- check all exceptions
-
-
-Implement QueryBuilderMap
 restructure classes
 
 

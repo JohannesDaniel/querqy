@@ -1,64 +1,26 @@
 package querqy.model.builder;
 
-import querqy.model.builder.converter.MapSettings;
-import querqy.model.builder.converter.QueryBuilderMap;
-import querqy.model.builder.model.BuilderField;
-import querqy.model.builder.model.BuilderFieldSettings;
+import querqy.model.builder.converter.MapConverter;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+public interface QueryNodeBuilder<B extends QueryNodeBuilder, O, P> {
 
-public interface QueryNodeBuilder<B, O, P> {
-
-    B getBuilder();
+    B getQueryBuilder();
 
     Class<B> getBuilderClass();
 
     String getNameOfQueryType();
 
-    default B checkAndSetDefaults() {
-        final Field[] fields = getBuilderClass().getDeclaredFields();
-
-        for (final Field field : fields) {
-            field.setAccessible(true);
-
-            final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
-
-            if (nonNull(fieldAnnotation)) {
-                try {
-                    final Object fieldValue = field.get(getBuilder());
-                    if (isNull(fieldValue)) {
-                        final Object defaulValue = fieldAnnotation.settings().defaultValue;
-
-                        if (isNull(defaulValue) && fieldAnnotation.fieldIsMandatory()) {
-                            throw new QueryBuilderException(
-                                    String.format("Field %s is mandatory for builder %s",
-                                            field.getName(), getNameOfQueryType()));
-                        }
-
-                        field.set(getBuilder(), defaulValue);
-                    }
-
-                } catch (IllegalAccessException e) {
-                    throw new QueryBuilderException(
-                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
-                }
-            }
-        }
-        return getBuilder();
-    }
+    B checkMandatoryFieldValues();
 
     default O build() {
-        checkAndSetDefaults();
         return build(null);
     }
 
     default O build(final P parent) {
-        checkAndSetDefaults();
+        checkMandatoryFieldValues();
         return buildObject(parent);
     }
 
@@ -66,39 +28,48 @@ public interface QueryNodeBuilder<B, O, P> {
 
     B setAttributesFromObject(final O o);
 
+    // TODO: Change this to remove all annotation stuff
+//    default Map<String, Object> toMap() {
+//        return toMap(new MapConverter());
+//    }
+
     default Map<String, Object> toMap() {
-        return toMap(MapSettings.defaults());
+        return Collections.singletonMap(getNameOfQueryType(), attributesToMap(new MapConverter()));
     }
 
-    default Map<String, Object> toMap(final MapSettings mapSettings) {
-        checkAndSetDefaults();
+    default Map<String, Object> toMap(final MapConverter mapConverter) {
+        checkMandatoryFieldValues();
 
-        final QueryBuilderMap queryBuilderMap = new QueryBuilderMap();
-
-        for (final Field field : getBuilderClass().getDeclaredFields()) {
-            field.setAccessible(true);
-
-            final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
-
-            if (nonNull(fieldAnnotation)) {
-                final BuilderFieldSettings settings = fieldAnnotation.settings();
-
-                try {
-                    final Object fieldValue = field.get(getBuilder());
-                    if (nonNull(fieldValue)) {
-                        queryBuilderMap.putBuilderField(settings, fieldValue, mapSettings);
-                        // queryBuilderMap.put(settings.fieldName, settings.mapValueConverter.toMapValue(fieldValue));
-                    }
-
-                } catch (IllegalAccessException e) {
-                    throw new QueryBuilderException(
-                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
-                }
-            }
-        }
-
-        return Collections.singletonMap(getNameOfQueryType(), queryBuilderMap);
+        return Collections.singletonMap(getNameOfQueryType(), attributesToMap(mapConverter));
     }
+
+    Map<String, Object> attributesToMap(final MapConverter mapConverter);
+
+//    default Map<String, Object> toMap(final MapConverter mapConverter) {
+//        checkMandatoryFieldValues();
+//
+//        final Map<String, Object> map = new LinkedHashMap<>();
+//
+//        for (final Field field : getBuilderClass().getDeclaredFields()) {
+//            field.setAccessible(true);
+//
+//            final MapField fieldAnnotation = field.getAnnotation(MapField.class);
+//
+//            if (nonNull(fieldAnnotation)) {
+//                final MapFieldSettings settings = fieldAnnotation.settings();
+//
+//                try {
+//                    mapConverter.convertAndPut(map, field.get(getQueryBuilder()), settings);
+//
+//                } catch (IllegalAccessException e) {
+//                    throw new QueryBuilderException(
+//                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
+//                }
+//            }
+//        }
+//
+//        return Collections.singletonMap(getNameOfQueryType(), map);
+//    }
 
     default B fromMap(final Map map) {
         final Object rawAttributes = map.get(getNameOfQueryType());

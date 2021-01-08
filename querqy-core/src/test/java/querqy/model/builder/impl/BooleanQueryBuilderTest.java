@@ -9,11 +9,11 @@ import querqy.model.builder.AbstractBuilderTest;
 import querqy.model.builder.model.Occur;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static querqy.model.builder.impl.BooleanQueryBuilder.FIELD_NAME_CLAUSES;
+import static querqy.model.builder.impl.BooleanQueryBuilder.FIELD_NAME_IS_GENERATED;
+import static querqy.model.builder.impl.BooleanQueryBuilder.FIELD_NAME_OCCUR;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
-import static querqy.model.builder.model.BuilderFieldSettings.CLAUSES;
-import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
 
 public class BooleanQueryBuilderTest extends AbstractBuilderTest {
 
@@ -23,12 +23,12 @@ public class BooleanQueryBuilderTest extends AbstractBuilderTest {
                 map(
                         entry(BooleanQueryBuilder.NAME_OF_QUERY_TYPE,
                                 map(
-                                        entry(CLAUSES.fieldName,
+                                        entry(FIELD_NAME_CLAUSES,
                                                 list(
                                                         dmq("a").toMap(),
                                                         dmq("b").toMap())),
-                                        entry(OCCUR.fieldName, Occur.MUST.typeName),
-                                        entry(IS_GENERATED.fieldName, "true")))
+                                        entry(FIELD_NAME_OCCUR, Occur.MUST.typeName),
+                                        entry(FIELD_NAME_IS_GENERATED, "true")))
 
                 ))).isEqualTo(
                         bq(list(dmq("a"), dmq("b")), Occur.MUST, true));
@@ -43,12 +43,12 @@ public class BooleanQueryBuilderTest extends AbstractBuilderTest {
                         map(
                                 entry(BooleanQueryBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(CLAUSES.fieldName,
+                                                entry(FIELD_NAME_CLAUSES,
                                                         list(
                                                                 dmq("a").toMap(),
                                                                 dmq("b").toMap())),
-                                                entry(OCCUR.fieldName, Occur.MUST.typeName),
-                                                entry(IS_GENERATED.fieldName, true)))));
+                                                entry(FIELD_NAME_OCCUR, Occur.MUST.typeName),
+                                                entry(FIELD_NAME_IS_GENERATED, true)))));
     }
 
     @Test

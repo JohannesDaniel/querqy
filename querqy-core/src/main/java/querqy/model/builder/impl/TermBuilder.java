@@ -10,15 +10,16 @@ import querqy.ComparableCharSequence;
 import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
+import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
-import querqy.model.builder.model.BuilderField;
+import querqy.model.builder.converter.MapConverter;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static querqy.model.builder.model.BuilderFieldSettings.FIELD;
-import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldSettings.VALUE;
+import static java.util.Objects.isNull;
+import static querqy.model.builder.converter.MapConverter.DEFAULT_CONVERTER;
 
 @Accessors(chain = true)
 @Getter
@@ -30,14 +31,13 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     public static final String NAME_OF_QUERY_TYPE = "term";
 
-    @BuilderField(settings = VALUE)
+    public static final String FIELD_NAME_VALUE = "value";
+    public static final String FIELD_NAME_SEARCH_FIELD = "field";
+    public static final String FIELD_NAME_IS_GENERATED = "is_generated";
+
     private String value;
-
-    @BuilderField(settings = FIELD, fieldIsMandatory = false)
     private String field;
-
-    @BuilderField(settings = IS_GENERATED)
-    private Boolean isGenerated;
+    private Boolean isGenerated = false;
 
     public TermBuilder(final Term term) {
         this.setAttributesFromObject(term);
@@ -52,7 +52,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
-    public TermBuilder getBuilder() {
+    public TermBuilder getQueryBuilder() {
         return this;
     }
 
@@ -67,6 +67,16 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     @Override
+    public TermBuilder checkMandatoryFieldValues() {
+        if (isNull(value)) {
+            throw new QueryBuilderException(
+                    String.format("Field %s is mandatory for builder %s", "rawQuery", this.getClass().getName()));
+        }
+
+        return this;
+    }
+
+    @Override
     public Term buildObject(DisjunctionMaxQuery parent) {
         return new Term(parent, field, value, isGenerated);
     }
@@ -78,11 +88,22 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public TermBuilder setAttributesFromMap(final Map map) {
-        TypeCastingUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
-        TypeCastingUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
-        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
+        TypeCastingUtils.castString(map.get(FIELD_NAME_VALUE)).ifPresent(this::setValue);
+        TypeCastingUtils.castString(map.get(FIELD_NAME_SEARCH_FIELD)).ifPresent(this::setField);
+        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(FIELD_NAME_IS_GENERATED)).ifPresent(this::setIsGenerated);
 
         return this;
+    }
+
+    @Override
+    public Map<String, Object> attributesToMap(final MapConverter mapConverter) {
+        final Map<String, Object> map = new LinkedHashMap<>();
+
+        mapConverter.convertAndPut(map, FIELD_NAME_VALUE, this.value, DEFAULT_CONVERTER);
+        mapConverter.convertAndPut(map, FIELD_NAME_SEARCH_FIELD, this.field, DEFAULT_CONVERTER);
+        mapConverter.convertAndPut(map, FIELD_NAME_IS_GENERATED, this.isGenerated, DEFAULT_CONVERTER);
+
+        return map;
     }
 
     @Override
@@ -95,7 +116,7 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     public static TermBuilder term(final String value, final String field, final Boolean isGenerated) {
-        return new TermBuilder(value, field, isGenerated).checkAndSetDefaults();
+        return new TermBuilder(value, field, isGenerated);
     }
 
     public static TermBuilder term(final String value, final boolean isGenerated) {
@@ -107,6 +128,6 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     }
 
     public static TermBuilder term(final String value) {
-        return term(value, null, null);
+        return new TermBuilder(value);
     }
 }

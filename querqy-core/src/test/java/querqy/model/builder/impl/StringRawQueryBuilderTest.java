@@ -4,14 +4,29 @@ import org.junit.Test;
 import querqy.model.Clause;
 import querqy.model.StringRawQuery;
 import querqy.model.builder.AbstractBuilderTest;
+import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.model.Occur;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
-import static querqy.model.builder.model.BuilderFieldSettings.RAW_QUERY;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static querqy.model.builder.impl.StringRawQueryBuilder.FIELD_NAME_IS_GENERATED;
+import static querqy.model.builder.impl.StringRawQueryBuilder.FIELD_NAME_OCCUR;
+import static querqy.model.builder.impl.StringRawQueryBuilder.FIELD_NAME_RAW_QUERY;
+import static querqy.model.builder.impl.StringRawQueryBuilder.raw;
 
 public class StringRawQueryBuilderTest extends AbstractBuilderTest {
+
+    @Test
+    public void testThatExceptionIsThrownIfRawQueryIsNull() {
+        assertThatThrownBy(() -> raw(null).build())
+                .isInstanceOf(QueryBuilderException.class);
+    }
+
+    @Test
+    public void testThatNoExceptionIsThrownIfRawQueryIsNotNull() {
+        assertThatCode(() -> raw("raw").build()).doesNotThrowAnyException();
+    }
 
     @Test
     public void testSetAttributesFromMap() {
@@ -19,9 +34,9 @@ public class StringRawQueryBuilderTest extends AbstractBuilderTest {
         assertThat(new StringRawQueryBuilder(
                 map(
                         entry(StringRawQueryBuilder.NAME_OF_QUERY_TYPE, map(
-                                entry(RAW_QUERY.fieldName, "a"),
-                                entry(OCCUR.fieldName, "must"),
-                                entry(IS_GENERATED.fieldName, true)))
+                                entry(FIELD_NAME_RAW_QUERY, "a"),
+                                entry(FIELD_NAME_OCCUR, "must"),
+                                entry(FIELD_NAME_IS_GENERATED, true)))
                 )
         )).isEqualTo(new StringRawQueryBuilder("a", Occur.MUST, true));
 
@@ -34,9 +49,9 @@ public class StringRawQueryBuilderTest extends AbstractBuilderTest {
                         map(
                                 entry(StringRawQueryBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(RAW_QUERY.fieldName, "a"),
-                                                entry(OCCUR.fieldName, "must"),
-                                                entry(IS_GENERATED.fieldName, true)))
+                                                entry(FIELD_NAME_RAW_QUERY, "a"),
+                                                entry(FIELD_NAME_OCCUR, "must"),
+                                                entry(FIELD_NAME_IS_GENERATED, true)))
                         )
                 );
     }

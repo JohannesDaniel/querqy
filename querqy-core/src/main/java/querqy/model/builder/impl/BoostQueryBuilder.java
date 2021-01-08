@@ -10,15 +10,17 @@ import querqy.model.BoostQuery;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
-import querqy.model.builder.model.BuilderField;
+import querqy.model.builder.converter.MapConverter;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static querqy.model.builder.TypeCastingUtils.castFloatOrDoubleToFloat;
 import static querqy.model.builder.TypeCastingUtils.castMap;
-import static querqy.model.builder.model.BuilderFieldSettings.BOOST;
-import static querqy.model.builder.model.BuilderFieldSettings.QUERY;
+import static querqy.model.builder.converter.MapConverter.FLOAT_CONVERTER;
+import static querqy.model.builder.converter.MapConverter.QUERY_NODE_CONVERTER;
 
 @Accessors(chain = true)
 @Getter
@@ -30,11 +32,11 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
 
     public static final String NAME_OF_QUERY_TYPE = "boost_query";
 
-    @BuilderField(settings = QUERY)
-    private QuerqyQueryBuilder querqyQueryBuilder;
+    public static final String FIELD_NAME_QUERY = "query";
+    public static final String FIELD_NAME_BOOST = "boost";
 
-    @BuilderField(settings = BOOST)
-    private Float boost;
+    private QuerqyQueryBuilder querqyQueryBuilder;
+    private Float boost = 1.0f;
 
     public BoostQueryBuilder(final BoostQuery boostQuery) {
         this.setAttributesFromObject(boostQuery);
@@ -49,7 +51,7 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
     }
 
     @Override
-    public BoostQueryBuilder getBuilder() {
+    public BoostQueryBuilder getQueryBuilder() {
         return this;
     }
 
@@ -61,6 +63,16 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
     @Override
     public String getNameOfQueryType() {
         return NAME_OF_QUERY_TYPE;
+    }
+
+    @Override
+    public BoostQueryBuilder checkMandatoryFieldValues() {
+        if (isNull(querqyQueryBuilder)) {
+            throw new QueryBuilderException(
+                    String.format("Field %s is mandatory for builder %s", "querqyQueryBuilder", this.getClass().getName()));
+        }
+
+        return this;
     }
 
     @Override
@@ -77,8 +89,18 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
     }
 
     @Override
+    public Map<String, Object> attributesToMap(MapConverter mapConverter) {
+        final Map<String, Object> map = new LinkedHashMap<>();
+
+        mapConverter.convertAndPut(map, FIELD_NAME_QUERY, this.querqyQueryBuilder, QUERY_NODE_CONVERTER);
+        mapConverter.convertAndPut(map, FIELD_NAME_BOOST, this.boost, FLOAT_CONVERTER);
+
+        return map;
+    }
+
+    @Override
     public BoostQueryBuilder setAttributesFromMap(final Map map) {
-        final Optional<Map> optionalQuerqyQuery = castMap(map.get(QUERY.fieldName));
+        final Optional<Map> optionalQuerqyQuery = castMap(map.get(FIELD_NAME_QUERY));
 
         if (optionalQuerqyQuery.isPresent()) {
             this.setQuerqyQueryBuilder(BuilderFactory.createQuerqyQueryBuilderFromMap(optionalQuerqyQuery.get()));
@@ -86,7 +108,7 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
             throw new QueryBuilderException("The query of a boost query must not be null");
         }
 
-        castFloatOrDoubleToFloat(map.get(BOOST.fieldName)).ifPresent(this::setBoost);
+        castFloatOrDoubleToFloat(map.get(FIELD_NAME_BOOST)).ifPresent(this::setBoost);
 
         return this;
     }

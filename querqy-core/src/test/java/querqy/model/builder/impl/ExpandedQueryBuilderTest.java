@@ -12,10 +12,10 @@ import querqy.model.builder.AbstractBuilderTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.BoostQueryBuilder.boost;
-import static querqy.model.builder.model.BuilderFieldSettings.BOOST_DOWN_QUERIES;
-import static querqy.model.builder.model.BuilderFieldSettings.BOOST_UP_QUERIES;
-import static querqy.model.builder.model.BuilderFieldSettings.FILTER_QUERIES;
-import static querqy.model.builder.model.BuilderFieldSettings.USER_QUERY;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.FIELD_NAME_BOOST_DOWN_QUERIES;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.FIELD_NAME_BOOST_UP_QUERIES;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.FIELD_NAME_FILTER_QUERIES;
+import static querqy.model.builder.impl.ExpandedQueryBuilder.FIELD_NAME_USER_QUERY;
 
 public class ExpandedQueryBuilderTest extends AbstractBuilderTest {
 
@@ -28,10 +28,10 @@ public class ExpandedQueryBuilderTest extends AbstractBuilderTest {
                 map(
                         entry(ExpandedQueryBuilder.NAME_OF_QUERY_TYPE,
                                 map(
-                                        entry(USER_QUERY.fieldName, bq("a").toMap()),
-                                        entry(FILTER_QUERIES.fieldName, list(bq("b").toMap())),
-                                        entry(BOOST_UP_QUERIES.fieldName, list(boost(bq("c"), 1.0f).toMap())),
-                                        entry(BOOST_DOWN_QUERIES.fieldName, list(boost(bq("d"), 1.0f).toMap())))
+                                        entry(FIELD_NAME_USER_QUERY, bq("a").toMap()),
+                                        entry(FIELD_NAME_FILTER_QUERIES, list(bq("b").toMap())),
+                                        entry(FIELD_NAME_BOOST_UP_QUERIES, list(boost(bq("c"), 1.0f).toMap())),
+                                        entry(FIELD_NAME_BOOST_DOWN_QUERIES, list(boost(bq("d"), 1.0f).toMap())))
 
                 )))).isEqualTo(expandedBuilder);
     }
@@ -46,10 +46,10 @@ public class ExpandedQueryBuilderTest extends AbstractBuilderTest {
                         map(
                                 entry(ExpandedQueryBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(USER_QUERY.fieldName, bq("a").toMap()),
-                                                entry(FILTER_QUERIES.fieldName, list(bq("b").toMap())),
-                                                entry(BOOST_UP_QUERIES.fieldName, list(boost(bq("c"), 1.0f).toMap())),
-                                                entry(BOOST_DOWN_QUERIES.fieldName, list(boost(bq("d"), 1.0f).toMap())))))
+                                                entry(FIELD_NAME_USER_QUERY, bq("a").toMap()),
+                                                entry(FIELD_NAME_FILTER_QUERIES, list(bq("b").toMap())),
+                                                entry(FIELD_NAME_BOOST_UP_QUERIES, list(boost(bq("c"), 1.0f).toMap())),
+                                                entry(FIELD_NAME_BOOST_DOWN_QUERIES, list(boost(bq("d"), 1.0f).toMap())))))
                 );
     }
 

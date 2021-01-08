@@ -8,6 +8,7 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import querqy.model.builder.converter.MapConverter;
 import querqy.model.builder.impl.BooleanQueryBuilder;
 import querqy.model.builder.impl.ExpandedQueryBuilder;
 
@@ -220,24 +221,32 @@ public class QuerqyJsonQParserTest extends SolrJettyTestBase {
     }
 
     private static Map<String, Object> createRequestToTestMatching(ExpandedQueryBuilder expandedQuery) {
+        Map expandedQueryMap = new MapConverter()
+                .enableParseBooleanToString()
+                .convertQueryBuilderToMap(expandedQuery);
+
         Map<String, Object> request = new HashMap<>();
         request.put("mm", "100%");
         request.put("tie", 0.0f);
         request.put("uq.similarityScore", "off");
         request.put("qf", "f1 f2");
-        request.put("query", expandedQuery.toMap());
+        request.put("query", expandedQueryMap);
 
         return Collections.singletonMap("querqy", request);
     }
 
     private static Map<String, Object> createRequestToTestScoring(ExpandedQueryBuilder expandedQuery) {
+        Map expandedQueryMap = new MapConverter()
+                .enableParseBooleanToString()
+                .convertQueryBuilderToMap(expandedQuery);
+
         Map<String, Object> request = new HashMap<>();
         request.put("mm", "100%");
         request.put("tie", 0.0f);
         request.put("uq.similarityScore", "off");
         request.put("qboost.similarityScore", "off");
         request.put("qf", "f1^40 f2^10");
-        request.put("query", expandedQuery.toMap());
+        request.put("query", expandedQueryMap);
 
         return Collections.singletonMap("querqy", request);
     }

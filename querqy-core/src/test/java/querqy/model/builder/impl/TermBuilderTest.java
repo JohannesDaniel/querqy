@@ -10,9 +10,9 @@ import querqy.model.builder.QueryBuilderException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static querqy.model.builder.model.BuilderFieldSettings.VALUE;
-import static querqy.model.builder.model.BuilderFieldSettings.FIELD;
-import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.impl.TermBuilder.FIELD_NAME_IS_GENERATED;
+import static querqy.model.builder.impl.TermBuilder.FIELD_NAME_SEARCH_FIELD;
+import static querqy.model.builder.impl.TermBuilder.FIELD_NAME_VALUE;
 import static querqy.model.builder.impl.TermBuilder.term;
 
 public class TermBuilderTest extends AbstractBuilderTest {
@@ -34,9 +34,9 @@ public class TermBuilderTest extends AbstractBuilderTest {
         assertThat(new TermBuilder(
                 map(
                         entry(TermBuilder.NAME_OF_QUERY_TYPE, map(
-                                entry(VALUE.fieldName, "value"),
-                                entry(FIELD.fieldName, "field"),
-                                entry(IS_GENERATED.fieldName, true)))
+                                entry(FIELD_NAME_VALUE, "value"),
+                                entry(FIELD_NAME_SEARCH_FIELD, "field"),
+                                entry(FIELD_NAME_IS_GENERATED, true)))
                 )
         )).isEqualTo(term("value", "field", true));
 
@@ -49,9 +49,9 @@ public class TermBuilderTest extends AbstractBuilderTest {
                         map(
                                 entry(TermBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(VALUE.fieldName, "value"),
-                                                entry(FIELD.fieldName, "field"),
-                                                entry(IS_GENERATED.fieldName, true)))
+                                                entry(FIELD_NAME_VALUE, "value"),
+                                                entry(FIELD_NAME_SEARCH_FIELD, "field"),
+                                                entry(FIELD_NAME_IS_GENERATED, true)))
                         )
                 );
     }

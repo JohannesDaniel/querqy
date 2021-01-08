@@ -12,27 +12,29 @@ import querqy.model.builder.AbstractBuilderTest;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
+import static querqy.model.builder.impl.BoostQueryBuilder.FIELD_NAME_BOOST;
+import static querqy.model.builder.impl.BoostQueryBuilder.FIELD_NAME_QUERY;
 import static querqy.model.builder.impl.BoostQueryBuilder.boost;
-import static querqy.model.builder.model.BuilderFieldSettings.BOOST;
-import static querqy.model.builder.model.BuilderFieldSettings.QUERY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BoostQueryBuilderTest extends AbstractBuilderTest {
 
     @Test
     public void testThatExceptionIsThrownQueryValueIsNull() {
-        assertThatThrownBy(() -> new BoostQueryBuilder(null, null).build())
+        assertThatThrownBy(() -> new BoostQueryBuilder(Collections.emptyMap()).build())
                 .isInstanceOf(QueryBuilderException.class);
     }
 
     @Test
     public void testThatNoExceptionIsThrownIfQueryIsNotNull() {
-        assertThatCode(() -> new BoostQueryBuilder(mock(QuerqyQueryBuilder.class), null).build()).doesNotThrowAnyException();
+        assertThatCode(() -> new BoostQueryBuilder(mock(QuerqyQueryBuilder.class)).build()).doesNotThrowAnyException();
     }
 
     @Test
@@ -41,8 +43,8 @@ public class BoostQueryBuilderTest extends AbstractBuilderTest {
                 map(
                         entry(BoostQueryBuilder.NAME_OF_QUERY_TYPE,
                                 map(
-                                        entry(QUERY.fieldName, bq("a").toMap()),
-                                        entry(BOOST.fieldName, 1.0f)))
+                                        entry(FIELD_NAME_QUERY, bq("a").toMap()),
+                                        entry(FIELD_NAME_BOOST, 1.0f)))
 
                 ))).isEqualTo(boost(bq("a"), 1.0f));
     }
@@ -57,8 +59,8 @@ public class BoostQueryBuilderTest extends AbstractBuilderTest {
                                 entry(
                                         BoostQueryBuilder.NAME_OF_QUERY_TYPE,
                                         map(
-                                                entry(QUERY.fieldName, bq("a").toMap()),
-                                                entry(BOOST.fieldName, 1.0f))
+                                                entry(FIELD_NAME_QUERY, bq("a").toMap()),
+                                                entry(FIELD_NAME_BOOST, 1.0f))
                                 )
                         )
                 );
