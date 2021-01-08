@@ -1,4 +1,4 @@
-package querqy.model.builder.impl;
+package querqy.model.builder;
 
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxClause;
@@ -6,10 +6,12 @@ import querqy.model.MatchAllQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.StringRawQuery;
 import querqy.model.Term;
-import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.DisjunctionMaxClauseBuilder;
-import querqy.model.builder.QuerqyQueryBuilder;
-import querqy.model.builder.QueryBuilderException;
+import querqy.model.builder.impl.BooleanQueryBuilder;
+import querqy.model.builder.impl.MatchAllQueryBuilder;
+import querqy.model.builder.impl.StringRawQueryBuilder;
+import querqy.model.builder.impl.TermBuilder;
+import querqy.model.builder.model.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 
 import java.util.Map;
 

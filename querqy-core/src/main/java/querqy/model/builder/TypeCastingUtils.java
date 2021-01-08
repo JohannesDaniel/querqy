@@ -1,6 +1,7 @@
 package querqy.model.builder;
 
 import querqy.model.builder.model.Occur;
+import querqy.model.builder.model.QueryNodeBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;

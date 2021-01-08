@@ -2,7 +2,7 @@ package querqy.model.builder.converter;
 
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.QueryNodeBuilder;
 import querqy.model.builder.model.Occur;
 
 import java.util.Map;
@@ -29,25 +29,6 @@ public class MapConverter {
     public Map convertQueryBuilderToMap(final QueryNodeBuilder queryBuilder) {
         return queryBuilder.toMap(this);
     }
-
-//    public void convertAndPut(final Map<String, Object> map, final Object value, final MapFieldSettings mapFieldSettings) {
-//        final String fieldName = mapFieldSettings.fieldName;
-//
-//        if (isNull(value)) {
-//            if (includeNullValues) {
-//                map.put(fieldName, null);
-//            }
-//
-//            return;
-//        }
-//
-//        if (parseBooleanToString && value instanceof Boolean) {
-//            map.put(fieldName, String.valueOf(value));
-//            return;
-//        }
-//
-//        map.put(fieldName, mapFieldSettings.mapValueConverter.toMapValue(value, this));
-//    }
 
     public void convertAndPut(final Map<String, Object> map, final String fieldName, final Object value,
                               final MapValueConverter mapValueConverter) {

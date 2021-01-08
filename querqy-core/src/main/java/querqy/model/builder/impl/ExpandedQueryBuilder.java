@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 import querqy.model.BoostQuery;
 import querqy.model.ExpandedQuery;
 import querqy.model.QuerqyQuery;
+import querqy.model.builder.BuilderFactory;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
-import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.QueryNodeBuilder;
 import querqy.model.builder.converter.MapConverter;
 
 import java.util.Arrays;
@@ -26,9 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static querqy.model.builder.converter.MapConverter.DEFAULT_CONVERTER;
 import static querqy.model.builder.converter.MapConverter.LIST_OF_QUERY_NODE_CONVERTER;
-import static querqy.model.builder.converter.MapConverter.OCCUR_CONVERTER;
 import static querqy.model.builder.converter.MapConverter.QUERY_NODE_CONVERTER;
 
 @Accessors(chain = true)
@@ -61,16 +60,6 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
 
     public ExpandedQueryBuilder(final QuerqyQueryBuilder userQuery) {
         this.userQuery = userQuery;
-    }
-
-    @Override
-    public ExpandedQueryBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<ExpandedQueryBuilder> getBuilderClass() {
-        return ExpandedQueryBuilder.class;
     }
 
     @Override

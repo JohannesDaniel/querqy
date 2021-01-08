@@ -9,9 +9,10 @@ import lombok.experimental.Accessors;
 import querqy.ComparableCharSequence;
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxQuery;
+import querqy.model.builder.BuilderFactory;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.DisjunctionMaxClauseBuilder;
-import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.model.QueryNodeBuilder;
 import querqy.model.builder.converter.MapConverter;
 import querqy.model.builder.model.Occur;
 
@@ -57,16 +58,6 @@ public class DisjunctionMaxQueryBuilder implements
 
     public DisjunctionMaxQueryBuilder(final List<DisjunctionMaxClauseBuilder> clauses) {
         this.clauses = clauses;
-    }
-
-    @Override
-    public DisjunctionMaxQueryBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<DisjunctionMaxQueryBuilder> getBuilderClass() {
-        return DisjunctionMaxQueryBuilder.class;
     }
 
     @Override

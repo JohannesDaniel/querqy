@@ -1,4 +1,4 @@
-package querqy.model.builder;
+package querqy.model.builder.model;
 
 import querqy.model.QuerqyQuery;
 

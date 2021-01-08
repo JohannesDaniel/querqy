@@ -12,7 +12,7 @@ import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.model.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.converter.MapConverter;
 
 import java.util.LinkedHashMap;
@@ -49,16 +49,6 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     public TermBuilder(final String value) {
         this.value = value;
-    }
-
-    @Override
-    public TermBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<TermBuilder> getBuilderClass() {
-        return TermBuilder.class;
     }
 
     @Override

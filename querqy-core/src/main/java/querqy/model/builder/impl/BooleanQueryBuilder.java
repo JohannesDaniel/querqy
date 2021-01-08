@@ -11,8 +11,8 @@ import querqy.model.DisjunctionMaxQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.Query;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.DisjunctionMaxClauseBuilder;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.model.DisjunctionMaxClauseBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.converter.MapConverter;
 import querqy.model.builder.model.Occur;
@@ -59,16 +59,6 @@ public class BooleanQueryBuilder implements DisjunctionMaxClauseBuilder<BooleanQ
 
     public BooleanQueryBuilder(final List<DisjunctionMaxQueryBuilder> clauses) {
         this.clauses = clauses;
-    }
-
-    @Override
-    public BooleanQueryBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<BooleanQueryBuilder> getBuilderClass() {
-        return BooleanQueryBuilder.class;
     }
 
     @Override

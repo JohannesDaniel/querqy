@@ -11,7 +11,7 @@ import querqy.model.QuerqyQuery;
 import querqy.model.StringRawQuery;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.converter.MapConverter;
 import querqy.model.builder.model.Occur;
 
@@ -52,16 +52,6 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
 
     public StringRawQueryBuilder(final String rawQuery) {
         this.setRawQuery(rawQuery);
-    }
-
-    @Override
-    public StringRawQueryBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<StringRawQueryBuilder> getBuilderClass() {
-        return StringRawQueryBuilder.class;
     }
 
     @Override

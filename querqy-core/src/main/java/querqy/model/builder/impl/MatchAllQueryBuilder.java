@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.MatchAllQuery;
 import querqy.model.builder.TypeCastingUtils;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.converter.MapConverter;
 import querqy.model.builder.model.Occur;
 
@@ -45,16 +45,6 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     public MatchAllQueryBuilder(final Map map) {
         this.fromMap(map);
-    }
-
-    @Override
-    public Class<MatchAllQueryBuilder> getBuilderClass() {
-        return MatchAllQueryBuilder.class;
-    }
-
-    @Override
-    public MatchAllQueryBuilder getQueryBuilder() {
-        return this;
     }
 
     @Override

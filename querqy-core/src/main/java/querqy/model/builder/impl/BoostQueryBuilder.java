@@ -7,9 +7,10 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import querqy.model.BoostQuery;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.BuilderFactory;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
-import querqy.model.builder.QueryNodeBuilder;
+import querqy.model.builder.model.QueryNodeBuilder;
 import querqy.model.builder.converter.MapConverter;
 
 import java.util.LinkedHashMap;
@@ -48,16 +49,6 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
 
     public BoostQueryBuilder(final QuerqyQueryBuilder querqyQueryBuilder) {
         this.querqyQueryBuilder = querqyQueryBuilder;
-    }
-
-    @Override
-    public BoostQueryBuilder getQueryBuilder() {
-        return this;
-    }
-
-    @Override
-    public Class<BoostQueryBuilder> getBuilderClass() {
-        return BoostQueryBuilder.class;
     }
 
     @Override

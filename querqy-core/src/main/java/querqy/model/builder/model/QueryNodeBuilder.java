@@ -1,16 +1,12 @@
-package querqy.model.builder;
+package querqy.model.builder.model;
 
+import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.converter.MapConverter;
 
 import java.util.Collections;
 import java.util.Map;
 
 public interface QueryNodeBuilder<B extends QueryNodeBuilder, O, P> {
-
-    B getQueryBuilder();
-
-    Class<B> getBuilderClass();
-
     String getNameOfQueryType();
 
     B checkMandatoryFieldValues();
@@ -28,11 +24,6 @@ public interface QueryNodeBuilder<B extends QueryNodeBuilder, O, P> {
 
     B setAttributesFromObject(final O o);
 
-    // TODO: Change this to remove all annotation stuff
-//    default Map<String, Object> toMap() {
-//        return toMap(new MapConverter());
-//    }
-
     default Map<String, Object> toMap() {
         return Collections.singletonMap(getNameOfQueryType(), attributesToMap(new MapConverter()));
     }
@@ -44,32 +35,6 @@ public interface QueryNodeBuilder<B extends QueryNodeBuilder, O, P> {
     }
 
     Map<String, Object> attributesToMap(final MapConverter mapConverter);
-
-//    default Map<String, Object> toMap(final MapConverter mapConverter) {
-//        checkMandatoryFieldValues();
-//
-//        final Map<String, Object> map = new LinkedHashMap<>();
-//
-//        for (final Field field : getBuilderClass().getDeclaredFields()) {
-//            field.setAccessible(true);
-//
-//            final MapField fieldAnnotation = field.getAnnotation(MapField.class);
-//
-//            if (nonNull(fieldAnnotation)) {
-//                final MapFieldSettings settings = fieldAnnotation.settings();
-//
-//                try {
-//                    mapConverter.convertAndPut(map, field.get(getQueryBuilder()), settings);
-//
-//                } catch (IllegalAccessException e) {
-//                    throw new QueryBuilderException(
-//                            String.format("Error happened when setting defaults for field %s", field.getName()), e);
-//                }
-//            }
-//        }
-//
-//        return Collections.singletonMap(getNameOfQueryType(), map);
-//    }
 
     default B fromMap(final Map map) {
         final Object rawAttributes = map.get(getNameOfQueryType());

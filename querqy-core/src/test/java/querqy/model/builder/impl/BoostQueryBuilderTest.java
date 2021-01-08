@@ -9,7 +9,7 @@ import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Query;
 import querqy.model.Term;
 import querqy.model.builder.AbstractBuilderTest;
-import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.model.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 
 import java.util.Collections;
