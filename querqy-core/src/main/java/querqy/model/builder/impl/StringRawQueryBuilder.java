@@ -9,17 +9,16 @@ import lombok.experimental.Accessors;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.StringRawQuery;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
-import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
-import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
+import static querqy.model.builder.model.BuilderFieldSettings.RAW_QUERY;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
 @Accessors(chain = true)
@@ -32,14 +31,14 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
 
     public static final String NAME_OF_QUERY_TYPE = "string_raw_query";
 
-    @BuilderField(fieldProperties = OCCUR)
+    @BuilderField(settings = RAW_QUERY)
+    private String rawQuery;
+
+    @BuilderField(settings = OCCUR)
     private Occur occur;
 
-    @BuilderField(fieldProperties = IS_GENERATED)
-    private boolean isGenerated;
-
-    @BuilderField(fieldProperties = QUERY)
-    private String rawQuery;
+    @BuilderField(settings = IS_GENERATED)
+    private Boolean isGenerated;
 
     public StringRawQueryBuilder(final StringRawQuery stringRawQuery) {
         this.setAttributesFromObject(stringRawQuery);
@@ -82,16 +81,16 @@ public class StringRawQueryBuilder implements QuerqyQueryBuilder<StringRawQueryB
     public StringRawQueryBuilder setAttributesFromObject(StringRawQuery stringRawQuery) {
         this.setRawQuery(stringRawQuery.getQueryString());
         this.setOccur(getOccurByClauseObject(stringRawQuery.getOccur()));
-        this.setGenerated(stringRawQuery.isGenerated());
+        this.setIsGenerated(stringRawQuery.isGenerated());
 
         return this;
     }
 
     @Override
     public StringRawQueryBuilder setAttributesFromMap(Map map) {
-        TypeCastingBuilderUtils.castString(map.get(QUERY.fieldName)).ifPresent(this::setRawQuery);
-        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingUtils.castString(map.get(RAW_QUERY.fieldName)).ifPresent(this::setRawQuery);
+        TypeCastingUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
 
         return this;
     }

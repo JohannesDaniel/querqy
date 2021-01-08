@@ -1,20 +1,39 @@
 package querqy.model.builder.impl;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 import querqy.model.BoostQuery;
 import querqy.model.Clause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Query;
 import querqy.model.Term;
 import querqy.model.builder.AbstractBuilderTest;
+import querqy.model.builder.QuerqyQueryBuilder;
+import querqy.model.builder.QueryBuilderException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.BoostQueryBuilder.boost;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST;
-import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST;
+import static querqy.model.builder.model.BuilderFieldSettings.QUERY;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BoostQueryBuilderTest extends AbstractBuilderTest {
+
+    @Test
+    public void testThatExceptionIsThrownQueryValueIsNull() {
+        assertThatThrownBy(() -> new BoostQueryBuilder(null, null).build())
+                .isInstanceOf(QueryBuilderException.class);
+    }
+
+    @Test
+    public void testThatNoExceptionIsThrownIfQueryIsNotNull() {
+        assertThatCode(() -> new BoostQueryBuilder(mock(QuerqyQueryBuilder.class), null).build()).doesNotThrowAnyException();
+    }
 
     @Test
     public void testSetAttributesFromMap() {

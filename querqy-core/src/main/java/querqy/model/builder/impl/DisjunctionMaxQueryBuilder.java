@@ -9,21 +9,20 @@ import lombok.experimental.Accessors;
 import querqy.ComparableCharSequence;
 import querqy.model.BooleanQuery;
 import querqy.model.DisjunctionMaxQuery;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
-import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
+import static querqy.model.builder.model.BuilderFieldSettings.CLAUSES;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
 @Accessors(chain = true)
@@ -37,14 +36,14 @@ public class DisjunctionMaxQueryBuilder implements
 
     public static final String NAME_OF_QUERY_TYPE = "disjunction_max_query";
 
-    @BuilderField(fieldProperties = CLAUSES)
+    @BuilderField(settings = CLAUSES)
     private List<DisjunctionMaxClauseBuilder> clauses;
 
-    @BuilderField(fieldProperties = OCCUR)
+    @BuilderField(settings = OCCUR)
     private Occur occur;
 
-    @BuilderField(fieldProperties = IS_GENERATED)
-    private boolean isGenerated;
+    @BuilderField(settings = IS_GENERATED)
+    private Boolean isGenerated;
 
     public DisjunctionMaxQueryBuilder(final DisjunctionMaxQuery dmq) {
         this.setAttributesFromObject(dmq);
@@ -89,27 +88,24 @@ public class DisjunctionMaxQueryBuilder implements
 
         this.setClauses(clausesFromObject);
         this.setOccur(getOccurByClauseObject(dmq.getOccur()));
-        this.setGenerated(dmq.isGenerated());
+        this.setIsGenerated(dmq.isGenerated());
 
         return this;
     }
 
     @Override
     public DisjunctionMaxQueryBuilder setAttributesFromMap(final Map map) {
-        this.setClauses(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName),
+        this.setClauses(TypeCastingUtils.castAndParseListOfMaps(map.get(CLAUSES.fieldName),
                 BuilderFactory::createDisjunctionMaxClauseBuilderFromMap));
-        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
 
         return this;
     }
 
     public static DisjunctionMaxQueryBuilder dmq(
             final List<DisjunctionMaxClauseBuilder> clauses, final Occur occur, boolean isGenerated) {
-        final DisjunctionMaxQueryBuilder dmq = new DisjunctionMaxQueryBuilder(clauses, occur, isGenerated);
-        dmq.checkAndSetDefaults();
-
-        return dmq;
+        return new DisjunctionMaxQueryBuilder(clauses, occur, isGenerated).checkAndSetDefaults();
     }
 
     public static DisjunctionMaxQueryBuilder dmq(final List<DisjunctionMaxClauseBuilder> clauses) {

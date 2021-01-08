@@ -1,19 +1,14 @@
-Set Defaults:
-- add tests
-- setdefaults in build?
-- setAndCheckDefaults in build / tomap
-
-
-Finish toMap():
-- refactor tests
-- remove unneeded method
-- map value converter
+Defaults:
+- test defaults for all builders
 
 
 
 Misc:
 - check all exceptions
 
+
+Implement QueryBuilderMap
+restructure classes
 
 
 

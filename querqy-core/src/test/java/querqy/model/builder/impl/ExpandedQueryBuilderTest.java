@@ -12,10 +12,10 @@ import querqy.model.builder.AbstractBuilderTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.BooleanQueryBuilder.bq;
 import static querqy.model.builder.impl.BoostQueryBuilder.boost;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST_DOWN_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST_UP_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.FILTER_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.USER_QUERY;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST_DOWN_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST_UP_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.FILTER_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.USER_QUERY;
 
 public class ExpandedQueryBuilderTest extends AbstractBuilderTest {
 

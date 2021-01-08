@@ -10,9 +10,9 @@ import querqy.model.builder.model.Occur;
 import static org.assertj.core.api.Assertions.assertThat;
 import static querqy.model.builder.impl.DisjunctionMaxQueryBuilder.dmq;
 import static querqy.model.builder.impl.TermBuilder.term;
-import static querqy.model.builder.model.BuilderFieldProperties.CLAUSES;
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
+import static querqy.model.builder.model.BuilderFieldSettings.CLAUSES;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
 
 public class DisjunctionMaxQueryBuilderTest extends AbstractBuilderTest {
 
@@ -47,7 +47,7 @@ public class DisjunctionMaxQueryBuilderTest extends AbstractBuilderTest {
                                                                 term("b").toMap())
                                                 ),
                                                 entry(OCCUR.fieldName, Occur.MUST.typeName),
-                                                entry(IS_GENERATED.fieldName, "true")))
+                                                entry(IS_GENERATED.fieldName, true)))
                         )
                 );
     }

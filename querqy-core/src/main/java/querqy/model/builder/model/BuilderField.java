@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface BuilderField {
     boolean fieldIsMandatory() default true;
-    BuilderFieldProperties fieldProperties();
+    BuilderFieldSettings settings();
 }

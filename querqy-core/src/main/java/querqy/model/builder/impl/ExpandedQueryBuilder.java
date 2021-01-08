@@ -9,12 +9,11 @@ import lombok.experimental.Accessors;
 import querqy.model.BoostQuery;
 import querqy.model.ExpandedQuery;
 import querqy.model.QuerqyQuery;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 import querqy.model.builder.QueryNodeBuilder;
 import querqy.model.builder.model.BuilderField;
-import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,10 +24,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST_DOWN_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST_UP_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.FILTER_QUERIES;
-import static querqy.model.builder.model.BuilderFieldProperties.USER_QUERY;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST_DOWN_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST_UP_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.FILTER_QUERIES;
+import static querqy.model.builder.model.BuilderFieldSettings.USER_QUERY;
 
 @Accessors(chain = true)
 @Getter
@@ -40,16 +39,16 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
 
     public static final String NAME_OF_QUERY_TYPE = "expanded_query";
 
-    @BuilderField(fieldProperties = USER_QUERY)
+    @BuilderField(settings = USER_QUERY)
     private QuerqyQueryBuilder userQuery;
 
-    @BuilderField(fieldProperties = FILTER_QUERIES)
+    @BuilderField(settings = FILTER_QUERIES)
     private List<QuerqyQueryBuilder> filterQueries;
 
-    @BuilderField(fieldProperties = BOOST_UP_QUERIES)
+    @BuilderField(settings = BOOST_UP_QUERIES)
     private List<BoostQueryBuilder> boostUpQueries;
 
-    @BuilderField(fieldProperties = BOOST_DOWN_QUERIES)
+    @BuilderField(settings = BOOST_DOWN_QUERIES)
     private List<BoostQueryBuilder> boostDownQueries;
 
     public ExpandedQueryBuilder(final ExpandedQuery expanded) {
@@ -129,7 +128,7 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
     @Override
     public ExpandedQueryBuilder setAttributesFromMap(final Map map) {
 
-        final Optional<Map> optionalUserQuery = TypeCastingBuilderUtils.castMap(map.get(USER_QUERY.fieldName));
+        final Optional<Map> optionalUserQuery = TypeCastingUtils.castMap(map.get(USER_QUERY.fieldName));
         if (optionalUserQuery.isPresent()) {
             setUserQuery(BuilderFactory.createQuerqyQueryBuilderFromMap(optionalUserQuery.get()));
 
@@ -137,11 +136,11 @@ public class ExpandedQueryBuilder implements QueryNodeBuilder<ExpandedQueryBuild
             throw new QueryBuilderException(String.format("Creating %s requires an entry %s", NAME_OF_QUERY_TYPE, USER_QUERY.fieldName));
         }
 
-        this.setFilterQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(FILTER_QUERIES.fieldName),
+        this.setFilterQueries(TypeCastingUtils.castAndParseListOfMaps(map.get(FILTER_QUERIES.fieldName),
                 BuilderFactory::createQuerqyQueryBuilderFromMap));
 
-        this.setBoostUpQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(BOOST_UP_QUERIES.fieldName), BoostQueryBuilder::new));
-        this.setBoostDownQueries(TypeCastingBuilderUtils.castAndParseListOfMaps(map.get(BOOST_DOWN_QUERIES.fieldName), BoostQueryBuilder::new));
+        this.setBoostUpQueries(TypeCastingUtils.castAndParseListOfMaps(map.get(BOOST_UP_QUERIES.fieldName), BoostQueryBuilder::new));
+        this.setBoostDownQueries(TypeCastingUtils.castAndParseListOfMaps(map.get(BOOST_DOWN_QUERIES.fieldName), BoostQueryBuilder::new));
 
         return this;
     }

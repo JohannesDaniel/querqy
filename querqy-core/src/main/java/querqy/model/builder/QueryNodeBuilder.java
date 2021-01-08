@@ -1,21 +1,16 @@
 package querqy.model.builder;
 
-import querqy.model.builder.model.BuilderFieldType;
-import querqy.model.builder.model.QueryBuilderMap;
+import querqy.model.builder.converter.MapSettings;
+import querqy.model.builder.converter.QueryBuilderMap;
 import querqy.model.builder.model.BuilderField;
-import querqy.model.builder.model.BuilderFieldProperties;
+import querqy.model.builder.model.BuilderFieldSettings;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static querqy.model.builder.TypeCastingBuilderUtils.createCastFunctionForInterface;
 
 public interface QueryNodeBuilder<B, O, P> {
 
@@ -25,7 +20,7 @@ public interface QueryNodeBuilder<B, O, P> {
 
     String getNameOfQueryType();
 
-    default void checkAndSetDefaults() {
+    default B checkAndSetDefaults() {
         final Field[] fields = getBuilderClass().getDeclaredFields();
 
         for (final Field field : fields) {
@@ -37,7 +32,7 @@ public interface QueryNodeBuilder<B, O, P> {
                 try {
                     final Object fieldValue = field.get(getBuilder());
                     if (isNull(fieldValue)) {
-                        final Object defaulValue = fieldAnnotation.fieldProperties().defaultValue;
+                        final Object defaulValue = fieldAnnotation.settings().defaultValue;
 
                         if (isNull(defaulValue) && fieldAnnotation.fieldIsMandatory()) {
                             throw new QueryBuilderException(
@@ -54,6 +49,7 @@ public interface QueryNodeBuilder<B, O, P> {
                 }
             }
         }
+        return getBuilder();
     }
 
     default O build() {
@@ -70,8 +66,11 @@ public interface QueryNodeBuilder<B, O, P> {
 
     B setAttributesFromObject(final O o);
 
-
     default Map<String, Object> toMap() {
+        return toMap(MapSettings.defaults());
+    }
+
+    default Map<String, Object> toMap(final MapSettings mapSettings) {
         checkAndSetDefaults();
 
         final QueryBuilderMap queryBuilderMap = new QueryBuilderMap();
@@ -82,12 +81,13 @@ public interface QueryNodeBuilder<B, O, P> {
             final BuilderField fieldAnnotation = field.getAnnotation(BuilderField.class);
 
             if (nonNull(fieldAnnotation)) {
-                final BuilderFieldProperties properties = fieldAnnotation.fieldProperties();
+                final BuilderFieldSettings settings = fieldAnnotation.settings();
 
                 try {
                     final Object fieldValue = field.get(getBuilder());
                     if (nonNull(fieldValue)) {
-                        queryBuilderMap.put(properties.fieldName, properties.mapValueConverter.toMapValue(fieldValue));
+                        queryBuilderMap.putBuilderField(settings, fieldValue, mapSettings);
+                        // queryBuilderMap.put(settings.fieldName, settings.mapValueConverter.toMapValue(fieldValue));
                     }
 
                 } catch (IllegalAccessException e) {
@@ -111,6 +111,4 @@ public interface QueryNodeBuilder<B, O, P> {
     }
 
     B setAttributesFromMap(final Map map);
-
-
 }

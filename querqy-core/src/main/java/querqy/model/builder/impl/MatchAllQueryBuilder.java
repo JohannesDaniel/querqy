@@ -7,19 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import querqy.model.Clause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.MatchAllQuery;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.model.BuilderField;
 import querqy.model.builder.model.Occur;
-import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldProperties.OCCUR;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldSettings.OCCUR;
 import static querqy.model.builder.model.Occur.getOccurByClauseObject;
 
 @Accessors(chain = true)
@@ -33,11 +31,11 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     public static final String NAME_OF_QUERY_TYPE = "match_all_query";
 
-    @BuilderField(fieldProperties = IS_GENERATED)
-    private Boolean isGenerated;
-
-    @BuilderField(fieldProperties = OCCUR)
+    @BuilderField(settings = OCCUR)
     private Occur occur;
+
+    @BuilderField(settings = IS_GENERATED)
+    private Boolean isGenerated;
 
     public MatchAllQueryBuilder(final MatchAllQuery matchAllQuery) {
         this.setAttributesFromObject(matchAllQuery);
@@ -59,7 +57,7 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     @Override
     public MatchAllQuery buildObject(DisjunctionMaxQuery parent) {
-        return new MatchAllQuery(parent, Clause.Occur.SHOULD, isGenerated);
+        return new MatchAllQuery(parent, this.occur.objectForClause, isGenerated);
     }
 
     @Override
@@ -76,9 +74,13 @@ public class MatchAllQueryBuilder implements QuerqyQueryBuilder<MatchAllQueryBui
 
     @Override
     public MatchAllQueryBuilder setAttributesFromMap(Map map) {
-        TypeCastingBuilderUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
-        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
+        TypeCastingUtils.castOccurByTypeName(map.get(OCCUR.fieldName)).ifPresent(this::setOccur);
+        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
         return this;
+    }
+
+    public static MatchAllQueryBuilder matchall(final Occur occur, final boolean isGenerated) {
+        return new MatchAllQueryBuilder(occur, isGenerated);
     }
 
     public static MatchAllQueryBuilder matchall() {

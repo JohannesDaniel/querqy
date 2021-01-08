@@ -15,10 +15,10 @@ import querqy.model.builder.model.BuilderField;
 import java.util.Map;
 import java.util.Optional;
 
-import static querqy.model.builder.TypeCastingBuilderUtils.castFloatOrDoubleToFloat;
-import static querqy.model.builder.TypeCastingBuilderUtils.castMap;
-import static querqy.model.builder.model.BuilderFieldProperties.BOOST;
-import static querqy.model.builder.model.BuilderFieldProperties.QUERY;
+import static querqy.model.builder.TypeCastingUtils.castFloatOrDoubleToFloat;
+import static querqy.model.builder.TypeCastingUtils.castMap;
+import static querqy.model.builder.model.BuilderFieldSettings.BOOST;
+import static querqy.model.builder.model.BuilderFieldSettings.QUERY;
 
 @Accessors(chain = true)
 @Getter
@@ -30,11 +30,11 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
 
     public static final String NAME_OF_QUERY_TYPE = "boost_query";
 
-    @BuilderField(fieldProperties = QUERY)
+    @BuilderField(settings = QUERY)
     private QuerqyQueryBuilder querqyQueryBuilder;
 
-    @BuilderField(fieldProperties = BOOST)
-    private float boost;
+    @BuilderField(settings = BOOST)
+    private Float boost;
 
     public BoostQueryBuilder(final BoostQuery boostQuery) {
         this.setAttributesFromObject(boostQuery);
@@ -95,7 +95,7 @@ public class BoostQueryBuilder implements QueryNodeBuilder<BoostQueryBuilder, Bo
         return new BoostQueryBuilder(querqyQueryBuilder);
     }
 
-    public static BoostQueryBuilder boost(final QuerqyQueryBuilder querqyQueryBuilder, final float boost) {
+    public static BoostQueryBuilder boost(final QuerqyQueryBuilder querqyQueryBuilder, final Float boost) {
         return new BoostQueryBuilder(querqyQueryBuilder, boost);
     }
 }

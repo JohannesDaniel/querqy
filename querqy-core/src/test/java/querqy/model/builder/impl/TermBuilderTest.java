@@ -1,20 +1,36 @@
 package querqy.model.builder.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Test;
 import querqy.model.Term;
 import querqy.model.builder.AbstractBuilderTest;
+import querqy.model.builder.QueryBuilderException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static querqy.model.builder.model.BuilderFieldProperties.VALUE;
-import static querqy.model.builder.model.BuilderFieldProperties.FIELD;
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static querqy.model.builder.model.BuilderFieldSettings.VALUE;
+import static querqy.model.builder.model.BuilderFieldSettings.FIELD;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
 import static querqy.model.builder.impl.TermBuilder.term;
 
 public class TermBuilderTest extends AbstractBuilderTest {
 
     @Test
-    public void testSetAttributesFromMap() {
+    public void testThatExceptionIsThrownIfValueIsNull() {
+        assertThatThrownBy(() -> new TermBuilder(null, null, false).build())
+                .isInstanceOf(QueryBuilderException.class);
+    }
 
+    @Test
+    public void testThatNoExceptionIsThrownIfValueIsNotNull() {
+        assertThatCode(() -> new TermBuilder("term", null, false).build()).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void testSetAttributesFromMap() {
+        new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         assertThat(new TermBuilder(
                 map(
                         entry(TermBuilder.NAME_OF_QUERY_TYPE, map(
@@ -35,7 +51,7 @@ public class TermBuilderTest extends AbstractBuilderTest {
                                         map(
                                                 entry(VALUE.fieldName, "value"),
                                                 entry(FIELD.fieldName, "field"),
-                                                entry(IS_GENERATED.fieldName, "true")))
+                                                entry(IS_GENERATED.fieldName, true)))
                         )
                 );
     }

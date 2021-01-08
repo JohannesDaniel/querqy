@@ -6,14 +6,12 @@ import querqy.model.MatchAllQuery;
 import querqy.model.QuerqyQuery;
 import querqy.model.StringRawQuery;
 import querqy.model.Term;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.QuerqyQueryBuilder;
 import querqy.model.builder.QueryBuilderException;
 
 import java.util.Map;
-
-import static querqy.model.builder.impl.TermBuilder.term;
 
 public class BuilderFactory {
 
@@ -36,7 +34,7 @@ public class BuilderFactory {
     }
 
     public static QuerqyQueryBuilder createQuerqyQueryBuilderFromMap(final Map map) {
-        final String nameOfQueryType = TypeCastingBuilderUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
+        final String nameOfQueryType = TypeCastingUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
 
         if (BooleanQueryBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
             return new BooleanQueryBuilder(map);
@@ -67,7 +65,7 @@ public class BuilderFactory {
     }
 
     public static DisjunctionMaxClauseBuilder createDisjunctionMaxClauseBuilderFromMap(final Map map) {
-        final String nameOfQueryType = TypeCastingBuilderUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
+        final String nameOfQueryType = TypeCastingUtils.expectMapToContainExactlyOneEntryAndGetKey(map);
 
         if (TermBuilder.NAME_OF_QUERY_TYPE.equals(nameOfQueryType)) {
             return new TermBuilder(map);

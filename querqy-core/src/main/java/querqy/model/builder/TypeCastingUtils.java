@@ -1,6 +1,5 @@
 package querqy.model.builder;
 
-import querqy.model.builder.impl.ExpandedQueryBuilder;
 import querqy.model.builder.model.Occur;
 
 import java.util.ArrayList;
@@ -13,26 +12,9 @@ import java.util.function.Function;
 import static java.util.Objects.isNull;
 import static querqy.model.builder.model.Occur.getOccurByTypeName;
 
-public class TypeCastingBuilderUtils {
+public class TypeCastingUtils {
 
-    private TypeCastingBuilderUtils() {}
-
-
-    public static void createCastFunctionForClassType(Class<?> classType) {
-        if (classType.isInterface()) {
-
-        } else {
-
-        }
-    }
-
-    public static void createCastFunctionForInterface(final Class<?> interfaceType) {
-        if (interfaceType.isAssignableFrom(QueryNodeBuilder.class)) {
-            System.out.println("true");
-
-        }
-    }
-
+    private TypeCastingUtils() {}
 
     public static <T> List<T> castAndParseListOfMaps(final Object rawList, final Function<Map, T> objectMapper) {
         final List<T> parsedMaps = new ArrayList<>();
@@ -40,7 +22,7 @@ public class TypeCastingBuilderUtils {
         final List listOfMaps = castList(rawList).orElse(Collections.emptyList());
 
         for (final Object rawMap : listOfMaps) {
-            final Optional<Map> optionalMap = TypeCastingBuilderUtils.castMap(rawMap);
+            final Optional<Map> optionalMap = TypeCastingUtils.castMap(rawMap);
 
             optionalMap.ifPresent(map -> parsedMaps.add(objectMapper.apply(map)));
         }

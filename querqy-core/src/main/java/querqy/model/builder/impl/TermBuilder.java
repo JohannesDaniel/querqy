@@ -10,16 +10,15 @@ import querqy.ComparableCharSequence;
 import querqy.model.DisjunctionMaxClause;
 import querqy.model.DisjunctionMaxQuery;
 import querqy.model.Term;
-import querqy.model.builder.TypeCastingBuilderUtils;
+import querqy.model.builder.TypeCastingUtils;
 import querqy.model.builder.DisjunctionMaxClauseBuilder;
 import querqy.model.builder.model.BuilderField;
-import querqy.model.builder.model.QueryBuilderMap;
 
 import java.util.Map;
 
-import static querqy.model.builder.model.BuilderFieldProperties.FIELD;
-import static querqy.model.builder.model.BuilderFieldProperties.IS_GENERATED;
-import static querqy.model.builder.model.BuilderFieldProperties.VALUE;
+import static querqy.model.builder.model.BuilderFieldSettings.FIELD;
+import static querqy.model.builder.model.BuilderFieldSettings.IS_GENERATED;
+import static querqy.model.builder.model.BuilderFieldSettings.VALUE;
 
 @Accessors(chain = true)
 @Getter
@@ -31,14 +30,14 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     public static final String NAME_OF_QUERY_TYPE = "term";
 
-    @BuilderField(fieldProperties = VALUE)
+    @BuilderField(settings = VALUE)
     private String value;
 
-    @BuilderField(fieldProperties = FIELD, fieldIsMandatory = false)
+    @BuilderField(settings = FIELD, fieldIsMandatory = false)
     private String field;
 
-    @BuilderField(fieldProperties = IS_GENERATED)
-    private boolean isGenerated;
+    @BuilderField(settings = IS_GENERATED)
+    private Boolean isGenerated;
 
     public TermBuilder(final Term term) {
         this.setAttributesFromObject(term);
@@ -79,9 +78,9 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
 
     @Override
     public TermBuilder setAttributesFromMap(final Map map) {
-        TypeCastingBuilderUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
-        TypeCastingBuilderUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
-        TypeCastingBuilderUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setGenerated);
+        TypeCastingUtils.castString(map.get(VALUE.fieldName)).ifPresent(this::setValue);
+        TypeCastingUtils.castString(map.get(FIELD.fieldName)).ifPresent(this::setField);
+        TypeCastingUtils.castStringOrBooleanToBoolean(map.get(IS_GENERATED.fieldName)).ifPresent(this::setIsGenerated);
 
         return this;
     }
@@ -90,32 +89,24 @@ public class TermBuilder implements DisjunctionMaxClauseBuilder<TermBuilder, Ter
     public TermBuilder setAttributesFromObject(final Term term) {
         this.setValue(term.getComparableCharSequence().toString());
         this.setField(term.getField());
-        this.setGenerated(term.isGenerated());
+        this.setIsGenerated(term.isGenerated());
 
         return this;
     }
 
-    public static TermBuilder term(final String value, final String field, final boolean isGenerated) {
-        return new TermBuilder(value, field, isGenerated);
+    public static TermBuilder term(final String value, final String field, final Boolean isGenerated) {
+        return new TermBuilder(value, field, isGenerated).checkAndSetDefaults();
     }
 
     public static TermBuilder term(final String value, final boolean isGenerated) {
-        return new TermBuilder(value, null, isGenerated);
+        return term(value, null, isGenerated);
     }
 
     public static TermBuilder term(final ComparableCharSequence value) {
-        return new TermBuilder(value.toString());
+        return term(value.toString());
     }
 
     public static TermBuilder term(final String value) {
-        return new TermBuilder(value);
-    }
-
-    public static TermBuilder term(final Map map) {
-        return new TermBuilder(map);
-    }
-
-    public static TermBuilder term(final Term term) {
-        return new TermBuilder(term);
+        return term(value, null, null);
     }
 }
